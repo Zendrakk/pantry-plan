@@ -14,7 +14,9 @@ public static class Register
         app.MapPost("/api/auth/register", Handle);
     }
 
-    private static async Task<IResult> Handle(Request request, UserManager<User> userManager)
+    private static async Task<IResult> Handle(
+        Request request,
+        UserManager<User> userManager)
     {
         var user = new User
         {
