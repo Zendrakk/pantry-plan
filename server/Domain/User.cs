@@ -6,5 +6,7 @@ namespace PantryPlan.Api.Domain
     // security stamp, lockout fields, and more.
     public class User : IdentityUser
     {
+        //  DateTimeOffset stores an explicit UTC offset alongside the timestamp, which avoids a whole category of timezone bugs.
+        public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
     }
 }
