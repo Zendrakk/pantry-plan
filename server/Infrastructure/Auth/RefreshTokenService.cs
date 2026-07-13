@@ -46,6 +46,37 @@ public class RefreshTokenService(AppDbContext db)
         await _db.SaveChangesAsync();
     }
 
+    public async Task<string?> DetectReuseAsync(string rawToken)
+    {
+        var tokenHash = Hash(rawToken);
+
+        var token = await _db.RefreshTokens
+            .FirstOrDefaultAsync(rt => rt.TokenHash == tokenHash);
+
+        // If it exists but is revoked, someone is presenting a token that was
+        // already rotated away — that's a reuse signal. Return the affected user.
+        if (token is not null && token.RevokedAt is not null)
+        {
+            return token.UserId;
+        }
+
+        return null;
+    }
+
+    public async Task RevokeAllForUserAsync(string userId)
+    {
+        var activeTokens = await _db.RefreshTokens
+            .Where(rt => rt.UserId == userId && rt.RevokedAt == null)
+            .ToListAsync();
+
+        foreach (var token in activeTokens)
+        {
+            token.RevokedAt = DateTimeOffset.UtcNow;
+        }
+
+        await _db.SaveChangesAsync();
+    }
+
     private static string GenerateRawToken()
     {
         var bytes = RandomNumberGenerator.GetBytes(64);

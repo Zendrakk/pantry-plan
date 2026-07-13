@@ -17,3 +17,8 @@ Content-Type: application/json
   "password": "TestPassword123!"
 }
 ###
+
+POST http://localhost:5235/api/auth/logout
+Content-Type: application/json
+
+###
