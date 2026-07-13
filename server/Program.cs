@@ -57,6 +57,7 @@ builder.Services
 builder.Services.AddAuthorization();
 
 builder.Services.AddScoped<JwtTokenService>();
+builder.Services.AddScoped<RefreshTokenService>();
 
 var app = builder.Build();
 

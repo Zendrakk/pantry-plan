@@ -18,7 +18,9 @@ public static class Login
     private static async Task<IResult> Handle(
         Request request,
         UserManager<User> userManager,
-        JwtTokenService tokenService)
+        JwtTokenService tokenService,
+        RefreshTokenService refreshTokenService,
+        HttpContext httpContext)
     {
         var user = await userManager.FindByEmailAsync(request.Email);
 
@@ -35,6 +37,16 @@ public static class Login
         }
 
         var accessToken = tokenService.GenerateAccessToken(user);
+        var (rawRefreshToken, _) = await refreshTokenService.GenerateAsync(user.Id);
+
+        httpContext.Response.Cookies.Append("refreshToken", rawRefreshToken, new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.Lax,
+            Expires = DateTimeOffset.UtcNow.AddDays(30),
+            Path = "/api/auth"
+        });
 
         return Results.Ok(new Response(accessToken, user.Id, user.Email!));
     }
