@@ -3,13 +3,14 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PantryPlan.Api.Domain;
-using PantryPlan.Api.Features.Auth;
 using PantryPlan.Api.Infrastructure.Auth;
 using PantryPlan.Api.Infrastructure.Persistence;
+using PantryPlan.Api.Services.Auth;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -58,6 +59,7 @@ builder.Services.AddAuthorization();
 
 builder.Services.AddScoped<JwtTokenService>();
 builder.Services.AddScoped<RefreshTokenService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 var app = builder.Build();
 
@@ -72,9 +74,6 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-Register.MapEndpoint(app);
-Login.MapEndpoint(app);
-Refresh.MapEndpoint(app);
-Logout.MapEndpoint(app);
+app.MapControllers();
 
 app.Run();

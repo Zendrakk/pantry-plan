@@ -1,0 +1,102 @@
+using Microsoft.AspNetCore.Identity;
+using PantryPlan.Api.Domain;
+using PantryPlan.Api.Infrastructure.Auth;
+
+namespace PantryPlan.Api.Services.Auth;
+
+public class AuthService(
+    UserManager<User> userManager,
+    JwtTokenService jwtTokenService,
+    RefreshTokenService refreshTokenService) : IAuthService
+{
+    public async Task<RegisterResult> RegisterAsync(string email, string password)
+    {
+        var user = new User
+        {
+            UserName = email,
+            Email = email
+        };
+
+        var result = await userManager.CreateAsync(user, password);
+
+        if (!result.Succeeded)
+        {
+            var errors = result.Errors.Select(e => e.Description);
+            return new RegisterResult(Succeeded: false, Errors: errors);
+        }
+
+        return new RegisterResult(Succeeded: true, UserId: user.Id, Email: user.Email!);
+    }
+
+    public async Task<LoginResult> LoginAsync(string email, string password)
+    {
+        var user = await userManager.FindByEmailAsync(email);
+
+        if (user is null)
+        {
+            return new LoginResult(Succeeded: false);
+        }
+
+        var passwordValid = await userManager.CheckPasswordAsync(user, password);
+
+        if (!passwordValid)
+        {
+            return new LoginResult(Succeeded: false);
+        }
+
+        var accessToken = jwtTokenService.GenerateAccessToken(user);
+        var (rawRefreshToken, _) = await refreshTokenService.GenerateAsync(user.Id);
+
+        return new LoginResult(
+            Succeeded: true,
+            AccessToken: accessToken,
+            RawRefreshToken: rawRefreshToken,
+            UserId: user.Id,
+            Email: user.Email!);
+    }
+
+    public async Task<RefreshResult> RefreshAsync(string? rawRefreshToken)
+    {
+        if (string.IsNullOrEmpty(rawRefreshToken))
+        {
+            return new RefreshResult(Succeeded: false);
+        }
+
+        var existingToken = await refreshTokenService.FindActiveAsync(rawRefreshToken);
+
+        if (existingToken is null)
+        {
+            var reusedUserId = await refreshTokenService.DetectReuseAsync(rawRefreshToken);
+            if (reusedUserId is not null)
+            {
+                // Token was valid once but already rotated - someone is replaying
+                // an old token. Nuke every active session for this user as a precaution.
+                await refreshTokenService.RevokeAllForUserAsync(reusedUserId);
+            }
+
+            return new RefreshResult(Succeeded: false);
+        }
+
+        var (newRawToken, newTokenEntity) = await refreshTokenService.GenerateAsync(existingToken.UserId);
+        await refreshTokenService.RevokeAsync(existingToken, newTokenEntity.Id);
+
+        var accessToken = jwtTokenService.GenerateAccessToken(existingToken.User);
+
+        return new RefreshResult(Succeeded: true, AccessToken: accessToken, RawRefreshToken: newRawToken);
+    }
+
+    public async Task LogoutAsync(string? rawRefreshToken)
+    {
+        if (string.IsNullOrEmpty(rawRefreshToken))
+        {
+            return;
+        }
+
+        var existingToken = await refreshTokenService.FindActiveAsync(rawRefreshToken);
+
+        if (existingToken is not null)
+        {
+            await refreshTokenService.RevokeAsync(existingToken);
+        }
+    }
+}
