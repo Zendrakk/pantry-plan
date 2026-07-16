@@ -6,6 +6,7 @@ using PantryPlan.Api.Domain;
 using PantryPlan.Api.Infrastructure.Auth;
 using PantryPlan.Api.Infrastructure.Persistence;
 using PantryPlan.Api.Services.Auth;
+using PantryPlan.Api.Services.Recipes;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -65,6 +66,7 @@ builder.Services.AddAuthorization();
 builder.Services.AddScoped<JwtTokenService>();
 builder.Services.AddScoped<RefreshTokenService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IRecipeService, RecipeService>();
 
 var app = builder.Build();
 
