@@ -48,6 +48,8 @@ builder.Services
     })
     .AddJwtBearer(options =>
     {
+        options.MapInboundClaims = false; // keep claim types as issued, don't remap "sub" etc.
+
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,

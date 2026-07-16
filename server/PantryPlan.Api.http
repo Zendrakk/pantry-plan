@@ -10,6 +10,7 @@ Content-Type: application/json
 }
 
 ### Login
+# @name login
 POST {{baseUrl}}/api/auth/login
 Content-Type: application/json
 
@@ -23,3 +24,17 @@ POST {{baseUrl}}/api/auth/refresh
 
 ### Logout
 POST {{baseUrl}}/api/auth/logout
+
+### Create Recipe
+POST {{baseUrl}}/api/recipes
+Content-Type: application/json
+Authorization: Bearer {{login.response.body.$.accessToken}}
+
+{
+  "title": "Test Recipe",
+  "instructions": "Mix and bake",
+  "servingSize": 4,
+  "ingredients": [
+    { "ingredientName": "Flour", "quantity": 2, "unit": "Cup" }
+  ]
+}
