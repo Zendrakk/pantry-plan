@@ -70,3 +70,32 @@ Authorization: Bearer {{login.response.body.$.accessToken}}
 ### Get Recipe by Id (should 404 after delete)
 GET {{baseUrl}}/api/recipes/{{createRecipe.response.body.$.id}}
 Authorization: Bearer {{login.response.body.$.accessToken}}
+
+### Create Meal Plan
+# @name createMealPlan
+POST {{baseUrl}}/api/mealplans
+Content-Type: application/json
+Authorization: Bearer {{login.response.body.$.accessToken}}
+
+{
+  "weekStartDate": "2026-07-20"
+}
+
+### Add Entry to Meal Plan
+POST {{baseUrl}}/api/mealplans/{{createMealPlan.response.body.$.id}}/entries
+Content-Type: application/json
+Authorization: Bearer {{login.response.body.$.accessToken}}
+
+{
+  "recipeId": "{{createRecipe.response.body.$.id}}",
+  "date": "2026-07-20",
+  "mealType": "Dinner"
+}
+
+### Get Meal Plan
+GET {{baseUrl}}/api/mealplans/{{createMealPlan.response.body.$.id}}
+Authorization: Bearer {{login.response.body.$.accessToken}}
+
+### List Meal Plans
+GET {{baseUrl}}/api/mealplans
+Authorization: Bearer {{login.response.body.$.accessToken}}
