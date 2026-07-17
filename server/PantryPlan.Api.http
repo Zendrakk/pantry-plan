@@ -26,6 +26,7 @@ POST {{baseUrl}}/api/auth/refresh
 POST {{baseUrl}}/api/auth/logout
 
 ### Create Recipe
+# @name createRecipe
 POST {{baseUrl}}/api/recipes
 Content-Type: application/json
 Authorization: Bearer {{login.response.body.$.accessToken}}
@@ -38,3 +39,34 @@ Authorization: Bearer {{login.response.body.$.accessToken}}
     { "ingredientName": "Flour", "quantity": 2, "unit": "Cup" }
   ]
 }
+
+### List Recipes
+GET {{baseUrl}}/api/recipes
+Authorization: Bearer {{login.response.body.$.accessToken}}
+
+### Get Recipe by Id
+GET {{baseUrl}}/api/recipes/{{createRecipe.response.body.$.id}}
+Authorization: Bearer {{login.response.body.$.accessToken}}
+
+### Update Recipe
+PUT {{baseUrl}}/api/recipes/{{createRecipe.response.body.$.id}}
+Content-Type: application/json
+Authorization: Bearer {{login.response.body.$.accessToken}}
+
+{
+  "title": "Updated Test Recipe",
+  "instructions": "Mix, bake, and cool",
+  "servingSize": 6,
+  "ingredients": [
+    { "ingredientName": "Flour", "quantity": 3, "unit": "Cup" },
+    { "ingredientName": "Sugar", "quantity": 1, "unit": "Cup" }
+  ]
+}
+
+### Delete Recipe
+DELETE {{baseUrl}}/api/recipes/{{createRecipe.response.body.$.id}}
+Authorization: Bearer {{login.response.body.$.accessToken}}
+
+### Get Recipe by Id (should 404 after delete)
+GET {{baseUrl}}/api/recipes/{{createRecipe.response.body.$.id}}
+Authorization: Bearer {{login.response.body.$.accessToken}}
