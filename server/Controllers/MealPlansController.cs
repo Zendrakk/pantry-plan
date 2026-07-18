@@ -78,6 +78,16 @@ namespace PantryPlan.Api.Controllers
             return updated is null ? NotFound() : Ok(updated);
         }
 
+        [HttpGet("{id:guid}/shopping-list")]
+        public async Task<IActionResult> GetShoppingList(Guid id)
+        {
+            var userId = GetUserId();
+            if (userId is null) return Unauthorized();
+
+            var shoppingList = await mealPlanService.GetShoppingListAsync(userId, id);
+            return shoppingList is null ? NotFound() : Ok(shoppingList);
+        }
+
         private string? GetUserId() => User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
     }
 }

@@ -108,6 +108,39 @@ namespace PantryPlan.Api.Services.MealPlans
             return await GetMealPlanAsync(ownerId, mealPlanId);
         }
 
+        public async Task<ShoppingListResponse?> GetShoppingListAsync(string ownerId, Guid mealPlanId)
+        {
+            var mealPlanExists = await db.MealPlans
+                .AnyAsync(mp => mp.Id == mealPlanId && mp.OwnerId == ownerId);
+
+            if (!mealPlanExists)
+            {
+                return null;
+            }
+
+            var recipeIngredients = await db.MealPlanEntries
+                .Where(e => e.MealPlanId == mealPlanId)
+                .SelectMany(e => e.Recipe.Ingredients)
+                .Include(ri => ri.Ingredient)
+                .ToListAsync();
+
+            var items = recipeIngredients
+                .GroupBy(ri => ri.Ingredient)
+                .Select(ingredientGroup => new ShoppingListItemResponse(
+                    ingredientGroup.Key.Name,
+                    ingredientGroup.Key.Category,
+                    ingredientGroup
+                        .GroupBy(ri => ri.Unit)
+                        .Select(unitGroup => new ShoppingListQuantityResponse(unitGroup.Sum(ri => ri.Quantity), unitGroup.Key))
+                        .ToList()
+                ))
+                .OrderBy(item => item.Category)
+                .ThenBy(item => item.IngredientName)
+                .ToList();
+
+            return new ShoppingListResponse(mealPlanId, items);
+        }
+
         private static MealPlanResponse MapToResponse(MealPlan mealPlan)
         {
             return new MealPlanResponse(

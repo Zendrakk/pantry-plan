@@ -99,3 +99,34 @@ Authorization: Bearer {{login.response.body.$.accessToken}}
 ### List Meal Plans
 GET {{baseUrl}}/api/mealplans
 Authorization: Bearer {{login.response.body.$.accessToken}}
+
+### Create Second Recipe (shares Flour in Cups, and adds Sugar in Grams)
+# @name createRecipe2
+POST {{baseUrl}}/api/recipes
+Content-Type: application/json
+Authorization: Bearer {{login.response.body.$.accessToken}}
+
+{
+  "title": "Pancakes",
+  "instructions": "Mix and cook",
+  "servingSize": 4,
+  "ingredients": [
+    { "ingredientName": "Flour", "quantity": 1, "unit": "Cup" },
+    { "ingredientName": "Sugar", "quantity": 50, "unit": "Gram" }
+  ]
+}
+
+### Add Second Recipe to Meal Plan
+POST {{baseUrl}}/api/mealplans/{{createMealPlan.response.body.$.id}}/entries
+Content-Type: application/json
+Authorization: Bearer {{login.response.body.$.accessToken}}
+
+{
+  "recipeId": "{{createRecipe2.response.body.$.id}}",
+  "date": "2026-07-21",
+  "mealType": "Breakfast"
+}
+
+### Get Shopping List
+GET {{baseUrl}}/api/mealplans/{{createMealPlan.response.body.$.id}}/shopping-list
+Authorization: Bearer {{login.response.body.$.accessToken}}

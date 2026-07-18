@@ -10,5 +10,6 @@ namespace PantryPlan.Api.Services.MealPlans
         Task<bool> DeleteMealPlanAsync(string ownerId, Guid mealPlanId);
         Task<MealPlanResponse?> AddEntryAsync(string ownerId, Guid mealPlanId, AddMealPlanEntryRequest request);
         Task<MealPlanResponse?> RemoveEntryAsync(string ownerId, Guid mealPlanId, Guid entryId);
+        Task<ShoppingListResponse?> GetShoppingListAsync(string ownerId, Guid mealPlanId);
     }
 }
