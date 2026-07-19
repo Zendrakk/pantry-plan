@@ -2,7 +2,6 @@
 using PantryPlan.Api.Domain;
 using PantryPlan.Api.Infrastructure.Persistence;
 using PantryPlan.Api.Models.Recipes;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace PantryPlan.Api.Services.Recipes
 {

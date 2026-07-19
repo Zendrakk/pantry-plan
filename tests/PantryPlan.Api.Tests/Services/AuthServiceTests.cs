@@ -1,9 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using PantryPlan.Api.Infrastructure.Auth;
 using PantryPlan.Api.Services.Auth;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace PantryPlan.Api.Tests.Services
 {
