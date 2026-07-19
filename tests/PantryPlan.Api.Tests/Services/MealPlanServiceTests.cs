@@ -1,31 +1,17 @@
-﻿using Microsoft.EntityFrameworkCore;
-using PantryPlan.Api.Domain;
-using PantryPlan.Api.Infrastructure.Persistence;
+﻿using PantryPlan.Api.Domain;
 using PantryPlan.Api.Models.MealPlans;
 using PantryPlan.Api.Models.Recipes;
 using PantryPlan.Api.Services.MealPlans;
 using PantryPlan.Api.Services.Recipes;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace PantryPlan.Api.Tests.Services
 {
     public class MealPlanServiceTests
     {
-        private static AppDbContext CreateDbContext()
-        {
-            var options = new DbContextOptionsBuilder<AppDbContext>()
-                .UseInMemoryDatabase(Guid.NewGuid().ToString())
-                .Options;
-
-            return new AppDbContext(options);
-        }
-
         [Fact]
         public async Task CreateMealPlanAsync_WithValidRequest_CreatesEmptyMealPlan()
         {
-            await using var db = CreateDbContext();
+            await using var db = TestHelpers.CreateDbContext();
             var service = new MealPlanService(db);
 
             var result = await service.CreateMealPlanAsync("user-1", new CreateMealPlanRequest(new DateOnly(2026, 7, 20)));
@@ -37,7 +23,7 @@ namespace PantryPlan.Api.Tests.Services
         [Fact]
         public async Task AddEntryAsync_WithOwnRecipe_AddsEntryAndReturnsUpdatedPlan()
         {
-            await using var db = CreateDbContext();
+            await using var db = TestHelpers.CreateDbContext();
             var recipeService = new RecipeService(db);
             var mealPlanService = new MealPlanService(db);
 
@@ -57,7 +43,7 @@ namespace PantryPlan.Api.Tests.Services
         [Fact]
         public async Task AddEntryAsync_WithAnotherUsersRecipe_ThrowsArgumentException()
         {
-            await using var db = CreateDbContext();
+            await using var db = TestHelpers.CreateDbContext();
             var recipeService = new RecipeService(db);
             var mealPlanService = new MealPlanService(db);
 
@@ -73,7 +59,7 @@ namespace PantryPlan.Api.Tests.Services
         [Fact]
         public async Task AddEntryAsync_WhenMealPlanNotOwnedByCaller_ReturnsNull()
         {
-            await using var db = CreateDbContext();
+            await using var db = TestHelpers.CreateDbContext();
             var recipeService = new RecipeService(db);
             var mealPlanService = new MealPlanService(db);
 
@@ -90,7 +76,7 @@ namespace PantryPlan.Api.Tests.Services
         [Fact]
         public async Task RemoveEntryAsync_WhenEntryExists_RemovesItAndReturnsUpdatedPlan()
         {
-            await using var db = CreateDbContext();
+            await using var db = TestHelpers.CreateDbContext();
             var recipeService = new RecipeService(db);
             var mealPlanService = new MealPlanService(db);
 
@@ -109,7 +95,7 @@ namespace PantryPlan.Api.Tests.Services
         [Fact]
         public async Task GetShoppingListAsync_WithSharedIngredientSameUnit_MergesQuantities()
         {
-            await using var db = CreateDbContext();
+            await using var db = TestHelpers.CreateDbContext();
             var recipeService = new RecipeService(db);
             var mealPlanService = new MealPlanService(db);
 
@@ -136,7 +122,7 @@ namespace PantryPlan.Api.Tests.Services
         [Fact]
         public async Task GetShoppingListAsync_WithSharedIngredientDifferentUnits_KeepsLinesSeparate()
         {
-            await using var db = CreateDbContext();
+            await using var db = TestHelpers.CreateDbContext();
             var recipeService = new RecipeService(db);
             var mealPlanService = new MealPlanService(db);
 
@@ -160,7 +146,7 @@ namespace PantryPlan.Api.Tests.Services
         [Fact]
         public async Task GetShoppingListAsync_WithSameRecipePlannedTwice_DoublesQuantity()
         {
-            await using var db = CreateDbContext();
+            await using var db = TestHelpers.CreateDbContext();
             var recipeService = new RecipeService(db);
             var mealPlanService = new MealPlanService(db);
 
@@ -183,7 +169,7 @@ namespace PantryPlan.Api.Tests.Services
         [Fact]
         public async Task GetShoppingListAsync_WhenMealPlanNotOwnedByCaller_ReturnsNull()
         {
-            await using var db = CreateDbContext();
+            await using var db = TestHelpers.CreateDbContext();
             var mealPlanService = new MealPlanService(db);
             var mealPlan = await mealPlanService.CreateMealPlanAsync("user-1", new CreateMealPlanRequest(new DateOnly(2026, 7, 20)));
 
@@ -195,7 +181,7 @@ namespace PantryPlan.Api.Tests.Services
         [Fact]
         public async Task GetShoppingListAsync_WithNoEntries_ReturnsEmptyItemsList()
         {
-            await using var db = CreateDbContext();
+            await using var db = TestHelpers.CreateDbContext();
             var mealPlanService = new MealPlanService(db);
             var mealPlan = await mealPlanService.CreateMealPlanAsync("user-1", new CreateMealPlanRequest(new DateOnly(2026, 7, 20)));
 

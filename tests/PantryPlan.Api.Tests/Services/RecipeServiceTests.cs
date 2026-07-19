@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PantryPlan.Api.Domain;
-using PantryPlan.Api.Infrastructure.Persistence;
 using PantryPlan.Api.Models.Recipes;
 using PantryPlan.Api.Services.Recipes;
 
@@ -8,19 +7,10 @@ namespace PantryPlan.Api.Tests.Services
 {
     public class RecipeServiceTests
     {
-        private static AppDbContext CreateDbContext()
-        {
-            var options = new DbContextOptionsBuilder<AppDbContext>()
-                .UseInMemoryDatabase(Guid.NewGuid().ToString())
-                .Options;
-
-            return new AppDbContext(options);
-        }
-
         [Fact]
         public async Task CreateRecipeAsync_WithValidRequest_CreatesRecipeAndIngredients()
         {
-            await using var db = CreateDbContext();
+            await using var db = TestHelpers.CreateDbContext();
             var service = new RecipeService(db);
             var request = new CreateRecipeRequest(
                 "Pancakes",
@@ -41,7 +31,7 @@ namespace PantryPlan.Api.Tests.Services
         [Fact]
         public async Task CreateRecipeAsync_WithBlankTitle_ThrowsArgumentException()
         {
-            await using var db = CreateDbContext();
+            await using var db = TestHelpers.CreateDbContext();
             var service = new RecipeService(db);
             var request = new CreateRecipeRequest(
                 "   ",
@@ -56,7 +46,7 @@ namespace PantryPlan.Api.Tests.Services
         [Fact]
         public async Task CreateRecipeAsync_WithNoIngredients_ThrowsArgumentException()
         {
-            await using var db = CreateDbContext();
+            await using var db = TestHelpers.CreateDbContext();
             var service = new RecipeService(db);
             var request = new CreateRecipeRequest("Pancakes", "Mix and cook", 4, []);
 
@@ -66,7 +56,7 @@ namespace PantryPlan.Api.Tests.Services
         [Fact]
         public async Task CreateRecipeAsync_WithExistingIngredientDifferentCase_ReusesSameIngredientRow()
         {
-            await using var db = CreateDbContext();
+            await using var db = TestHelpers.CreateDbContext();
             var service = new RecipeService(db);
 
             await service.CreateRecipeAsync("user-1", new CreateRecipeRequest(
@@ -82,7 +72,7 @@ namespace PantryPlan.Api.Tests.Services
         [Fact]
         public async Task GetRecipeAsync_WhenOwnedByCaller_ReturnsRecipe()
         {
-            await using var db = CreateDbContext();
+            await using var db = TestHelpers.CreateDbContext();
             var service = new RecipeService(db);
             var created = await service.CreateRecipeAsync("user-1", new CreateRecipeRequest(
                 "Pancakes", "Mix and cook", 4, [new IngredientLineRequest("Flour", 2, Unit.Cup)]));
@@ -96,7 +86,7 @@ namespace PantryPlan.Api.Tests.Services
         [Fact]
         public async Task GetRecipeAsync_WhenOwnedByDifferentUser_ReturnsNull()
         {
-            await using var db = CreateDbContext();
+            await using var db = TestHelpers.CreateDbContext();
             var service = new RecipeService(db);
             var created = await service.CreateRecipeAsync("user-1", new CreateRecipeRequest(
                 "Pancakes", "Mix and cook", 4, [new IngredientLineRequest("Flour", 2, Unit.Cup)]));
@@ -109,7 +99,7 @@ namespace PantryPlan.Api.Tests.Services
         [Fact]
         public async Task GetRecipeAsync_WhenRecipeDoesNotExist_ReturnsNull()
         {
-            await using var db = CreateDbContext();
+            await using var db = TestHelpers.CreateDbContext();
             var service = new RecipeService(db);
 
             var result = await service.GetRecipeAsync("user-1", Guid.NewGuid());
@@ -120,7 +110,7 @@ namespace PantryPlan.Api.Tests.Services
         [Fact]
         public async Task DeleteRecipeAsync_WhenOwnedByCaller_DeletesAndReturnsTrue()
         {
-            await using var db = CreateDbContext();
+            await using var db = TestHelpers.CreateDbContext();
             var service = new RecipeService(db);
             var created = await service.CreateRecipeAsync("user-1", new CreateRecipeRequest(
                 "Pancakes", "Mix and cook", 4, [new IngredientLineRequest("Flour", 2, Unit.Cup)]));
@@ -135,7 +125,7 @@ namespace PantryPlan.Api.Tests.Services
         [Fact]
         public async Task DeleteRecipeAsync_WhenOwnedByDifferentUser_ReturnsFalseAndDoesNotDelete()
         {
-            await using var db = CreateDbContext();
+            await using var db = TestHelpers.CreateDbContext();
             var service = new RecipeService(db);
             var created = await service.CreateRecipeAsync("user-1", new CreateRecipeRequest(
                 "Pancakes", "Mix and cook", 4, [new IngredientLineRequest("Flour", 2, Unit.Cup)]));
