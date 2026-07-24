@@ -72,7 +72,15 @@ export async function apiRequest<TResponse>(
     return undefined as TResponse
   }
 
-  // Otherwise, parse and return the JSON response body.
-  const data = await response.json()
+  // Some successful responses (like our logout endpoint) return a 200
+  // status but an empty body. Read the raw text first, and only attempt
+  // to parse it as JSON if there is actually something there.
+  const responseText = await response.text()
+
+  if (responseText === '') {
+    return undefined as TResponse
+  }
+
+  const data = JSON.parse(responseText)
   return data as TResponse
 }
