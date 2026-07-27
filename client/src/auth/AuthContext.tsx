@@ -32,12 +32,10 @@ export function AuthProvider(props: AuthProviderProps) {
   const [email, setEmail] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState<boolean>(true)
 
-  // useEffect lets us run code in response to the component being
-  // rendered, rather than in response to a user action like a button
-  // click. Here, we want to run some code exactly once, when the app
-  // first loads: try to silently refresh the access token using the
-  // refresh token cookie, in case the user already has a valid session
-  // from a previous visit.
+  // useEffect lets us run code in response to the component being rendered, rather than in response
+  // to a user action like a button click. Here, we want to run some code exactly once, when the app
+  // first loads: try to silently refresh the access token using the refresh token cookie, in case
+  // the user already has a valid session from a previous visit.
   useEffect(function () {
 
     async function attemptSilentRefresh() {
@@ -45,8 +43,7 @@ export function AuthProvider(props: AuthProviderProps) {
         const result = await authApi.refresh()
         setAccessToken(result.accessToken)
       } catch {
-        // No valid refresh token cookie, or it was rejected.
-        // That's fine - the user just isn't logged in.
+        // No valid refresh token cookie, or it was rejected. That's fine - the user just isn't logged in.
         setAccessToken(null)
       } finally {
         setIsLoading(false)
