@@ -4,6 +4,7 @@ import LoginPage from './pages/LoginPage'
 import ProtectedRoute from './auth/ProtectedRoute'
 import AppLayout from './components/AppLayout'
 import RecipeListPage from './pages/RecipeListPage'
+import CreateRecipePage from './pages/CreateRecipePage'
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <Route element={<AppLayout />}>
           <Route path="/recipes" element={<RecipeListPage />} />
           <Route path="/meal-plans" element={<div>Meal plans page coming soon</div>} />
+          <Route path="/recipes/new" element={<CreateRecipePage />} />
         </Route>
       </Route>
 
