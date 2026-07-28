@@ -50,6 +50,10 @@ function RecipeDetailPage() {
         &larr; Back to Recipes
       </Link>
 
+      <Link to={'/recipes/' + recipe.id + '/edit'} className="text-sm text-blue-600 hover:underline ml-4">
+        Edit
+      </Link>
+
       <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 mt-4">
         <h1 className="text-2xl font-bold text-gray-900">{recipe.title}</h1>
         <p className="text-sm text-gray-600 mb-4">Serves {recipe.servingSize}</p>

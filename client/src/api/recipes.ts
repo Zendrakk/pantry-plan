@@ -28,3 +28,13 @@ export async function createRecipe(accessToken: string, request: CreateRecipeReq
 
   return result
 }
+
+export async function updateRecipe(accessToken: string, recipeId: string, request: CreateRecipeRequest): Promise<Recipe> {
+  const result = await apiRequest<Recipe>('/recipes/' + recipeId, {
+    method: 'PUT',
+    body: request,
+    accessToken: accessToken,
+  })
+
+  return result
+}
