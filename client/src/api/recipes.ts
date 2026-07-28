@@ -38,3 +38,10 @@ export async function updateRecipe(accessToken: string, recipeId: string, reques
 
   return result
 }
+
+export async function deleteRecipe(accessToken: string, recipeId: string): Promise<void> {
+  await apiRequest<void>('/recipes/' + recipeId, {
+    method: 'DELETE',
+    accessToken: accessToken,
+  })
+}

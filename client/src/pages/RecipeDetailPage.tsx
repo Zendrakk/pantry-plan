@@ -3,9 +3,13 @@ import { useParams, Link } from 'react-router-dom'
 import { useAuth } from '../auth/useAuth'
 import { getRecipe } from '../api/recipes'
 import type { Recipe } from '../types/recipe'
+import { useNavigate } from 'react-router-dom'
+import { deleteRecipe } from '../api/recipes'
+import { ApiError } from '../api/client'
 
 function RecipeDetailPage() {
   const auth = useAuth()
+  const navigate = useNavigate()
   const params = useParams()
   const recipeId = params.recipeId
 
@@ -44,6 +48,28 @@ function RecipeDetailPage() {
     return <p className="text-gray-600">Loading recipe...</p>
   }
 
+  async function handleDeleteClick() {
+    if (auth.accessToken === null || recipeId === undefined) {
+      return
+    }
+
+    const confirmed = window.confirm('Are you sure you want to delete this recipe?')
+    if (!confirmed) {
+      return
+    }
+
+    try {
+      await deleteRecipe(auth.accessToken, recipeId)
+      navigate('/recipes')
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 409) {
+        setErrorMessage('This recipe is used in a meal plan and cannot be deleted.')
+      } else {
+        setErrorMessage('Failed to delete this recipe. Please try again.')
+      }
+    }
+  }
+
   return (
     <div>
       <Link to="/recipes" className="text-sm text-blue-600 hover:underline">
@@ -53,6 +79,13 @@ function RecipeDetailPage() {
       <Link to={'/recipes/' + recipe.id + '/edit'} className="text-sm text-blue-600 hover:underline ml-4">
         Edit
       </Link>
+
+      <button
+        onClick={handleDeleteClick}
+        className="text-sm text-red-600 hover:underline ml-4"
+      >
+        Delete
+      </button>
 
       <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 mt-4">
         <h1 className="text-2xl font-bold text-gray-900">{recipe.title}</h1>
