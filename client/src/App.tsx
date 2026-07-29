@@ -7,6 +7,8 @@ import RecipeListPage from './pages/RecipeListPage'
 import CreateRecipePage from './pages/CreateRecipePage'
 import RecipeDetailPage from './pages/RecipeDetailPage'
 import EditRecipePage from './pages/EditRecipePage'
+import CreateMealPlanPage from './pages/CreateMealPlanPage'
+import MealPlanListPage from './pages/MealPlanListPage'
 
 function App() {
   return (
@@ -17,10 +19,11 @@ function App() {
       <Route element={<ProtectedRoute />}>
         <Route element={<AppLayout />}>
           <Route path="/recipes" element={<RecipeListPage />} />
-          <Route path="/meal-plans" element={<div>Meal plans page coming soon</div>} />
+          <Route path="/meal-plans" element={<MealPlanListPage />} />
           <Route path="/recipes/new" element={<CreateRecipePage />} />
           <Route path="/recipes/:recipeId" element={<RecipeDetailPage />} />
           <Route path="/recipes/:recipeId/edit" element={<EditRecipePage />} />
+          <Route path="/meal-plans/new" element={<CreateMealPlanPage />} />
         </Route>
       </Route>
 
