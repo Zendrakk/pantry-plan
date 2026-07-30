@@ -9,6 +9,7 @@ import RecipeDetailPage from './pages/RecipeDetailPage'
 import EditRecipePage from './pages/EditRecipePage'
 import CreateMealPlanPage from './pages/CreateMealPlanPage'
 import MealPlanListPage from './pages/MealPlanListPage'
+import MealPlanDetailPage from './pages/MealPlanDetailPage'
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
           <Route path="/recipes/:recipeId" element={<RecipeDetailPage />} />
           <Route path="/recipes/:recipeId/edit" element={<EditRecipePage />} />
           <Route path="/meal-plans/new" element={<CreateMealPlanPage />} />
+          <Route path="/meal-plans/:mealPlanId" element={<MealPlanDetailPage />} />
         </Route>
       </Route>
 
