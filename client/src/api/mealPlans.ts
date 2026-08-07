@@ -29,6 +29,13 @@ export async function createMealPlan(accessToken: string, weekStartDate: string)
   return result
 }
 
+export async function deleteMealPlan(accessToken: string, mealPlanId: string): Promise<void> {
+  await apiRequest<void>('/mealplans/' + mealPlanId, {
+    method: 'DELETE',
+    accessToken: accessToken,
+  })
+}
+
 export async function addMealPlanEntry(
   accessToken: string,
   mealPlanId: string,
