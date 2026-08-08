@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams, Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth/useAuth'
-import { getMealPlan, addMealPlanEntry, removeMealPlanEntry } from '../api/mealPlans'
+import { getMealPlan, addMealPlanEntry, removeMealPlanEntry, deleteMealPlan } from '../api/mealPlans'
 import { listRecipes } from '../api/recipes'
 import type { MealPlan, MealType } from '../types/mealPlan'
 import type { RecipeSummary } from '../types/recipe'
@@ -11,6 +11,7 @@ const mealTypeOptions: MealType[] = ['Breakfast', 'Lunch', 'Dinner', 'Snack']
 function MealPlanDetailPage() {
   const auth = useAuth()
   const params = useParams()
+  const navigate = useNavigate()
   const mealPlanId = params.mealPlanId
 
   const [mealPlan, setMealPlan] = useState<MealPlan | null>(null)
@@ -93,6 +94,24 @@ function MealPlanDetailPage() {
     }
   }
 
+  async function handleDeleteMealPlanClick() {
+    if (auth.accessToken === null || mealPlanId === undefined) {
+      return
+    }
+
+    const confirmed = window.confirm('Are you sure you want to delete this meal plan? This cannot be undone.')
+    if (!confirmed) {
+      return
+    }
+
+    try {
+      await deleteMealPlan(auth.accessToken, mealPlanId)
+      navigate('/meal-plans')
+    } catch {
+      setErrorMessage('Failed to delete this meal plan. Please try again.')
+    }
+  }
+
   if (errorMessage !== '') {
     return <p className="text-red-600">{errorMessage}</p>
   }
@@ -109,12 +128,20 @@ function MealPlanDetailPage() {
 
       <div className="flex items-center justify-between mt-4 mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Week of {mealPlan.weekStartDate}</h1>
-        <Link
-          to={'/meal-plans/' + mealPlan.id + '/shopping-list'}
-          className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-700"
-        >
-          View Shopping List
-        </Link>
+        <div className="flex gap-2">
+          <Link
+            to={'/meal-plans/' + mealPlan.id + '/shopping-list'}
+            className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-700"
+          >
+            View Shopping List
+          </Link>
+          <button
+            onClick={handleDeleteMealPlanClick}
+            className="bg-red-600 text-white px-4 py-2 rounded-md text-sm hover:bg-red-700"
+          >
+            Delete Plan
+          </button>
+        </div>
       </div>
 
       <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 mb-6">
