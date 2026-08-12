@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../auth/useAuth'
 import { ApiError } from '../api/client'
 
@@ -95,6 +95,12 @@ function LoginPage() {
             {isSubmitting ? 'Logging in...' : 'Log In'}
           </button>
         </form>
+        <p className="text-sm text-gray-600 mt-4 text-center">
+          Don't have an account?{' '}
+          <Link to="/register" className="text-blue-600 hover:underline">
+            Sign up
+          </Link>
+        </p>
       </div>
     </div>
   )
