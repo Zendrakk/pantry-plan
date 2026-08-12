@@ -37,12 +37,28 @@ public class AuthService(
             return new LoginResult(Succeeded: false);
         }
 
+        // Check lockout BEFORE checking the password. If the account is already locked out from prior failed
+        // attempts, don't even bother validating the password - just fail the same way a wrong password would,
+        // so we never reveal "this account is locked" as a distinct signal to whoever is attempting to log in.
+        var isLockedOut = await userManager.IsLockedOutAsync(user);
+
+        if (isLockedOut)
+        {
+            return new LoginResult(Succeeded: false);
+        }
+
         var passwordValid = await userManager.CheckPasswordAsync(user, password);
 
         if (!passwordValid)
         {
+            // Record the failed attempt. Identity tracks this count itself and will automatically lock the
+            // account once the configured MaxFailedAccessAttempts threshold (set in Program.cs) is reached.
+            await userManager.AccessFailedAsync(user);
             return new LoginResult(Succeeded: false);
         }
+
+        // Correct password - clear any prior failed attempts so they don't linger and eventually cause an unexpected lockout later.
+        await userManager.ResetAccessFailedCountAsync(user);
 
         var accessToken = jwtTokenService.GenerateAccessToken(user);
         var (rawRefreshToken, _) = await refreshTokenService.GenerateAsync(user.Id);

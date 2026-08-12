@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using PantryPlan.Api.Models.Auth;
 using PantryPlan.Api.Services.Auth;
 
@@ -12,6 +13,7 @@ public class AuthController(IAuthService authService) : ControllerBase
     private const string RefreshTokenCookiePath = "/api/auth";
 
     [HttpPost("register")]
+    [EnableRateLimiting("AuthPolicy")]
     public async Task<IActionResult> Register(RegisterRequest request)
     {
         var result = await authService.RegisterAsync(request.Email, request.Password);
@@ -25,6 +27,7 @@ public class AuthController(IAuthService authService) : ControllerBase
     }
 
     [HttpPost("login")]
+    [EnableRateLimiting("AuthPolicy")]
     public async Task<IActionResult> Login(LoginRequest request)
     {
         var result = await authService.LoginAsync(request.Email, request.Password);
