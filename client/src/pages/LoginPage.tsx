@@ -2,10 +2,13 @@ import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../auth/useAuth'
 import { ApiError } from '../api/client'
+import usePageTitle from '../hooks/usePageTitle'
 
 function LoginPage() {
   const auth = useAuth()
   const navigate = useNavigate()
+  
+  usePageTitle('Log In')
 
   // These two pieces of state hold what the user has typed into each field.
   const [email, setEmail] = useState<string>('')

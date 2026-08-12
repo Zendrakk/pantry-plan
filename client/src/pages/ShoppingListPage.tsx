@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom'
 import { useAuth } from '../auth/useAuth'
 import { getShoppingList } from '../api/mealPlans'
 import type { ShoppingList } from '../types/mealPlan'
+import usePageTitle from '../hooks/usePageTitle'
 
 function ShoppingListPage() {
   const auth = useAuth()
@@ -11,6 +12,8 @@ function ShoppingListPage() {
 
   const [shoppingList, setShoppingList] = useState<ShoppingList | null>(null)
   const [errorMessage, setErrorMessage] = useState<string>('')
+
+  usePageTitle('Shopping List')
 
   useEffect(function () {
 

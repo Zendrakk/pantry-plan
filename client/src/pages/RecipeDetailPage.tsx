@@ -6,6 +6,7 @@ import type { Recipe } from '../types/recipe'
 import { useNavigate } from 'react-router-dom'
 import { deleteRecipe } from '../api/recipes'
 import { ApiError } from '../api/client'
+import usePageTitle from '../hooks/usePageTitle'
 
 function RecipeDetailPage() {
   const auth = useAuth()
@@ -39,6 +40,8 @@ function RecipeDetailPage() {
     loadRecipe()
 
   }, [auth.accessToken, recipeId])
+
+  usePageTitle(recipe === null ? 'Recipe' : recipe.title)
 
   if (errorMessage !== '') {
     return <p className="text-red-600">{errorMessage}</p>

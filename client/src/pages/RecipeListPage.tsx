@@ -3,9 +3,12 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../auth/useAuth'
 import { listRecipes } from '../api/recipes'
 import type { RecipeSummary } from '../types/recipe'
+import usePageTitle from '../hooks/usePageTitle'
 
 function RecipeListPage() {
   const auth = useAuth()
+  
+  usePageTitle('Recipes')
 
   // recipes starts as null, meaning "we haven't loaded anything yet."
   // Once loading finishes, it becomes either a real array (possibly

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth/useAuth'
 import { createMealPlan } from '../api/mealPlans'
+import usePageTitle from '../hooks/usePageTitle'
 
 function CreateMealPlanPage() {
   const auth = useAuth()
@@ -10,6 +11,8 @@ function CreateMealPlanPage() {
   const [weekStartDate, setWeekStartDate] = useState<string>('')
   const [errorMessage, setErrorMessage] = useState<string>('')
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
+
+  usePageTitle('New Meal Plan')
 
   function handleDateChange(event: React.ChangeEvent<HTMLInputElement>) {
     setWeekStartDate(event.target.value)

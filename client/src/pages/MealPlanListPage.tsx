@@ -3,12 +3,15 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../auth/useAuth'
 import { listMealPlans } from '../api/mealPlans'
 import type { MealPlanSummary } from '../types/mealPlan'
+import usePageTitle from '../hooks/usePageTitle'
 
 function MealPlanListPage() {
   const auth = useAuth()
 
   const [mealPlans, setMealPlans] = useState<MealPlanSummary[] | null>(null)
   const [errorMessage, setErrorMessage] = useState<string>('')
+
+  usePageTitle('Meal Plans')
 
   useEffect(function () {
 

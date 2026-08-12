@@ -2,10 +2,13 @@ import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../auth/useAuth'
 import { ApiError } from '../api/client'
+import usePageTitle from '../hooks/usePageTitle'
 
 function RegisterPage() {
   const auth = useAuth()
   const navigate = useNavigate()
+  
+  usePageTitle('Create Account')
 
   const [email, setEmail] = useState<string>('')
   const [password, setPassword] = useState<string>('')

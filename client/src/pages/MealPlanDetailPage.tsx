@@ -5,6 +5,7 @@ import { getMealPlan, addMealPlanEntry, removeMealPlanEntry, deleteMealPlan } fr
 import { listRecipes } from '../api/recipes'
 import type { MealPlan, MealType } from '../types/mealPlan'
 import type { RecipeSummary } from '../types/recipe'
+import usePageTitle from '../hooks/usePageTitle'
 
 const mealTypeOptions: MealType[] = ['Breakfast', 'Lunch', 'Dinner', 'Snack']
 
@@ -54,6 +55,8 @@ function MealPlanDetailPage() {
     loadData()
 
   }, [auth.accessToken, mealPlanId])
+
+  usePageTitle(mealPlan === null ? 'Meal Plan' : 'Week of ' + mealPlan.weekStartDate)
 
   async function handleAddEntrySubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()

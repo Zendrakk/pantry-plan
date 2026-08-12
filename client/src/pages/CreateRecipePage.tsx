@@ -3,6 +3,7 @@ import { useAuth } from '../auth/useAuth'
 import { createRecipe } from '../api/recipes'
 import RecipeForm from '../components/RecipeForm'
 import type { CreateRecipeRequest, IngredientLine } from '../types/recipe'
+import usePageTitle from '../hooks/usePageTitle'
 
 function createBlankIngredientLine(): IngredientLine {
   return {
@@ -15,6 +16,8 @@ function createBlankIngredientLine(): IngredientLine {
 function CreateRecipePage() {
   const auth = useAuth()
   const navigate = useNavigate()
+  
+  usePageTitle('New Recipe')
 
   async function handleFormSubmit(formData: CreateRecipeRequest) {
     if (auth.accessToken === null) {
