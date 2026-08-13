@@ -73,6 +73,7 @@ function EditRecipePage() {
         initialIngredients={recipe.ingredients}
         submitButtonLabel="Save Changes"
         submittingButtonLabel="Saving..."
+        cancelTo={'/recipes/' + recipe.id}
         onSubmit={handleFormSubmit}
       />
     </div>

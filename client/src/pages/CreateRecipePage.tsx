@@ -39,6 +39,7 @@ function CreateRecipePage() {
         initialIngredients={[createBlankIngredientLine()]}
         submitButtonLabel="Create Recipe"
         submittingButtonLabel="Creating..."
+        cancelTo="/recipes"
         onSubmit={handleFormSubmit}
       />
     </div>

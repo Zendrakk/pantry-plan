@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import type { IngredientLine, Unit, CreateRecipeRequest } from '../types/recipe'
 
 const unitOptions: Unit[] = [
@@ -31,6 +32,7 @@ interface RecipeFormProps {
   initialIngredients: IngredientLine[]
   submitButtonLabel: string
   submittingButtonLabel: string
+  cancelTo: string
   onSubmit: (formData: CreateRecipeRequest) => Promise<void>
 }
 
@@ -237,13 +239,22 @@ function RecipeForm(props: RecipeFormProps) {
         <p className="text-red-600 text-sm mb-4">{errorMessage}</p>
       )}
 
-      <button
-        type="submit"
-        disabled={isSubmitting}
-        className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:bg-blue-300"
-      >
-        {isSubmitting ? props.submittingButtonLabel : props.submitButtonLabel}
-      </button>
+      <div className="flex gap-2">
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:bg-blue-300"
+        >
+          {isSubmitting ? props.submittingButtonLabel : props.submitButtonLabel}
+        </button>
+
+        <Link
+          to={props.cancelTo}
+          className="px-4 py-2 rounded-md text-gray-700 hover:bg-gray-100"
+        >
+          Cancel
+        </Link>
+      </div>
     </form>
   )
 }
