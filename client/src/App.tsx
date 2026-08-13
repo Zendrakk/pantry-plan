@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom'
 import RegisterPage from './pages/RegisterPage'
 import LoginPage from './pages/LoginPage'
 import ProtectedRoute from './auth/ProtectedRoute'
+import GuestRoute from './auth/GuestRoute'
 import AppLayout from './components/AppLayout'
 import RecipeListPage from './pages/RecipeListPage'
 import CreateRecipePage from './pages/CreateRecipePage'
@@ -15,8 +16,10 @@ import ShoppingListPage from './pages/ShoppingListPage'
 function App() {
   return (
     <Routes>
-      <Route path="/register" element={<RegisterPage />} />
-      <Route path="/login" element={<LoginPage />} />
+      <Route element={<GuestRoute />}>
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/login" element={<LoginPage />} />
+      </Route>
 
       <Route element={<ProtectedRoute />}>
         <Route element={<AppLayout />}>
