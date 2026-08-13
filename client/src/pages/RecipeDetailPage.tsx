@@ -7,6 +7,9 @@ import { useNavigate } from 'react-router-dom'
 import { deleteRecipe } from '../api/recipes'
 import { ApiError } from '../api/client'
 import usePageTitle from '../hooks/usePageTitle'
+import Button from '../components/Button'
+import LinkButton from '../components/LinkButton'
+import Card from '../components/Card'
 
 function RecipeDetailPage() {
   const auth = useAuth()
@@ -79,34 +82,33 @@ function RecipeDetailPage() {
         &larr; Back to Recipes
       </Link>
 
-      <Link to={'/recipes/' + recipe.id + '/edit'} className="text-sm text-blue-600 hover:underline ml-4">
+      <LinkButton to={'/recipes/' + recipe.id + '/edit'} variant="secondary">
         Edit
-      </Link>
+      </LinkButton>
 
-      <button
-        onClick={handleDeleteClick}
-        className="text-sm text-red-600 hover:underline ml-4"
-      >
+      <Button type="button" variant="danger" onClick={handleDeleteClick}>
         Delete
-      </button>
+      </Button>
 
-      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 mt-4">
-        <h1 className="text-2xl font-bold text-gray-900">{recipe.title}</h1>
-        <p className="text-sm text-gray-600 mb-4">Serves {recipe.servingSize}</p>
+      <div className="mt-4">
+        <Card>
+          <h1 className="text-2xl font-bold text-gray-900">{recipe.title}</h1>
+          <p className="text-sm text-gray-600 mb-4">Serves {recipe.servingSize}</p>
 
-        <h2 className="text-lg font-semibold text-gray-900 mb-2">Ingredients</h2>
-        <ul className="list-disc list-inside mb-4">
-          {recipe.ingredients.map(function (ingredientLine, index) {
-            return (
-              <li key={index} className="text-gray-700">
-                {ingredientLine.quantity} {ingredientLine.unit} {ingredientLine.ingredientName}
-              </li>
-            )
-          })}
-        </ul>
+          <h2 className="text-lg font-semibold text-gray-900 mb-2">Ingredients</h2>
+          <ul className="list-disc list-inside mb-4">
+            {recipe.ingredients.map(function (ingredientLine, index) {
+              return (
+                <li key={index} className="text-gray-700">
+                  {ingredientLine.quantity} {ingredientLine.unit} {ingredientLine.ingredientName}
+                </li>
+              )
+            })}
+          </ul>
 
-        <h2 className="text-lg font-semibold text-gray-900 mb-2">Instructions</h2>
-        <p className="text-gray-700 whitespace-pre-wrap">{recipe.instructions}</p>
+          <h2 className="text-lg font-semibold text-gray-900 mb-2">Instructions</h2>
+          <p className="text-gray-700 whitespace-pre-wrap">{recipe.instructions}</p>
+        </Card>
       </div>
     </div>
   )

@@ -3,6 +3,8 @@ import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../auth/useAuth'
 import { createMealPlan } from '../api/mealPlans'
 import usePageTitle from '../hooks/usePageTitle'
+import Button from '../components/Button'
+import LinkButton from '../components/LinkButton'
 
 function CreateMealPlanPage() {
   const auth = useAuth()
@@ -64,20 +66,13 @@ function CreateMealPlanPage() {
         )}
 
         <div className="flex gap-2">
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:bg-blue-300"
-          >
+          <Button type="submit" variant="primary" disabled={isSubmitting}>
             {isSubmitting ? 'Creating...' : 'Create Meal Plan'}
-          </button>
+          </Button>
 
-          <Link
-            to="/meal-plans"
-            className="px-4 py-2 rounded-md text-gray-700 hover:bg-gray-100"
-          >
+          <LinkButton to="/meal-plans" variant="secondary">
             Cancel
-          </Link>
+          </LinkButton>
         </div>
       </form>
     </div>

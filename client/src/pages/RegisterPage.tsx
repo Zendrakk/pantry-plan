@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../auth/useAuth'
 import { ApiError } from '../api/client'
 import usePageTitle from '../hooks/usePageTitle'
+import Button from '../components/Button'
 
 function RegisterPage() {
   const auth = useAuth()
@@ -111,13 +112,9 @@ function RegisterPage() {
             <p className="text-red-600 text-sm mb-4">{errorMessage}</p>
           )}
 
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 disabled:bg-blue-300"
-          >
+          <Button type="submit" variant="primary" disabled={isSubmitting}>
             {isSubmitting ? 'Creating account...' : 'Create Account'}
-          </button>
+          </Button>
         </form>
 
         <p className="text-sm text-gray-600 mt-4 text-center">

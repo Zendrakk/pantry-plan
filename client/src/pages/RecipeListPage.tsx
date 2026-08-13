@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
 import { useAuth } from '../auth/useAuth'
 import { listRecipes } from '../api/recipes'
 import type { RecipeSummary } from '../types/recipe'
 import usePageTitle from '../hooks/usePageTitle'
+import LinkButton from '../components/LinkButton'
+import CardLink from '../components/CardLink'
 
 function RecipeListPage() {
   const auth = useAuth()
@@ -47,12 +48,9 @@ function RecipeListPage() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Recipes</h1>
-        <Link
-          to="/recipes/new"
-          className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-700"
-        >
+        <LinkButton to="/recipes/new" variant="primary">
           New Recipe
-        </Link>
+        </LinkButton>
       </div>
 
       {recipes.length === 0 && (
@@ -63,15 +61,12 @@ function RecipeListPage() {
         {recipes.map(function (recipe) {
           return (
             <li key={recipe.id}>
-              <Link
-                to={'/recipes/' + recipe.id}
-                className="block bg-white p-4 rounded-lg shadow-sm hover:shadow-md border border-gray-200"
-              >
+              <CardLink to={'/recipes/' + recipe.id}>
                 <p className="font-semibold text-gray-900">{recipe.title}</p>
                 <p className="text-sm text-gray-600">
                   Serves {recipe.servingSize} &middot; {recipe.ingredientCount} ingredients
                 </p>
-              </Link>
+              </CardLink>
             </li>
           )
         })}
