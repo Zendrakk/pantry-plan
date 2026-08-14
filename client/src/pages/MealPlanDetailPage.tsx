@@ -9,6 +9,7 @@ import usePageTitle from '../hooks/usePageTitle'
 import Button from '../components/Button'
 import LinkButton from '../components/LinkButton'
 import Card from '../components/Card'
+import Spinner from '../components/Spinner'
 
 const mealTypeOptions: MealType[] = ['Breakfast', 'Lunch', 'Dinner', 'Snack']
 
@@ -123,7 +124,7 @@ function MealPlanDetailPage() {
   }
 
   if (mealPlan === null || recipes === null) {
-    return <p className="text-gray-600">Loading meal plan...</p>
+    return <Spinner />
   }
 
   return (

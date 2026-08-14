@@ -1,5 +1,6 @@
 import { Navigate, Outlet } from 'react-router-dom'
 import { useAuth } from './useAuth'
+import Spinner from '../components/Spinner'
 
 function ProtectedRoute() {
   const auth = useAuth()
@@ -12,7 +13,7 @@ function ProtectedRoute() {
   if (auth.isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <p className="text-gray-600">Loading...</p>
+        <Spinner />
       </div>
     )
   }

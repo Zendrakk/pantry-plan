@@ -5,6 +5,7 @@ import type { RecipeSummary } from '../types/recipe'
 import usePageTitle from '../hooks/usePageTitle'
 import LinkButton from '../components/LinkButton'
 import CardLink from '../components/CardLink'
+import Spinner from '../components/Spinner'
 
 function RecipeListPage() {
   const auth = useAuth()
@@ -41,7 +42,7 @@ function RecipeListPage() {
   }
 
   if (recipes === null) {
-    return <p className="text-gray-600">Loading recipes...</p>
+    return <Spinner />
   }
 
   return (

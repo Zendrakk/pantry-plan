@@ -5,6 +5,7 @@ import { getShoppingList } from '../api/mealPlans'
 import type { ShoppingList } from '../types/mealPlan'
 import usePageTitle from '../hooks/usePageTitle'
 import Card from '../components/Card'
+import Spinner from '../components/Spinner'
 
 function ShoppingListPage() {
   const auth = useAuth()
@@ -45,7 +46,7 @@ function ShoppingListPage() {
   }
 
   if (shoppingList === null) {
-    return <p className="text-gray-600">Loading shopping list...</p>
+    return <Spinner />
   }
 
   return (

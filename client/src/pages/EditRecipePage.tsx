@@ -5,6 +5,7 @@ import { getRecipe, updateRecipe } from '../api/recipes'
 import RecipeForm from '../components/RecipeForm'
 import type { Recipe, CreateRecipeRequest } from '../types/recipe'
 import usePageTitle from '../hooks/usePageTitle'
+import Spinner from '../components/Spinner'
 
 function EditRecipePage() {
   const auth = useAuth()
@@ -59,7 +60,7 @@ function EditRecipePage() {
   }
 
   if (recipe === null) {
-    return <p className="text-gray-600">Loading recipe...</p>
+    return <Spinner />
   }
 
   return (

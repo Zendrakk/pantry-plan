@@ -5,6 +5,7 @@ import type { MealPlanSummary } from '../types/mealPlan'
 import usePageTitle from '../hooks/usePageTitle'
 import LinkButton from '../components/LinkButton'
 import CardLink from '../components/CardLink'
+import Spinner from '../components/Spinner'
 
 function MealPlanListPage() {
   const auth = useAuth()
@@ -38,7 +39,7 @@ function MealPlanListPage() {
   }
 
   if (mealPlans === null) {
-    return <p className="text-gray-600">Loading meal plans...</p>
+    return <Spinner />
   }
 
   return (

@@ -1,5 +1,6 @@
 import { Navigate, Outlet } from 'react-router-dom'
 import { useAuth } from './useAuth'
+import Spinner from '../components/Spinner'
 
 function GuestRoute() {
   const auth = useAuth()
@@ -9,7 +10,7 @@ function GuestRoute() {
   if (auth.isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <p className="text-gray-600">Loading...</p>
+        <Spinner />
       </div>
     )
   }

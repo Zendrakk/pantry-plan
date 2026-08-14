@@ -10,6 +10,7 @@ import usePageTitle from '../hooks/usePageTitle'
 import Button from '../components/Button'
 import LinkButton from '../components/LinkButton'
 import Card from '../components/Card'
+import Spinner from '../components/Spinner'
 
 function RecipeDetailPage() {
   const auth = useAuth()
@@ -51,7 +52,7 @@ function RecipeDetailPage() {
   }
 
   if (recipe === null) {
-    return <p className="text-gray-600">Loading recipe...</p>
+    return <Spinner />
   }
 
   async function handleDeleteClick() {
