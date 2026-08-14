@@ -4,6 +4,7 @@ import { useAuth } from '../auth/useAuth'
 import { getShoppingList } from '../api/mealPlans'
 import type { ShoppingList } from '../types/mealPlan'
 import usePageTitle from '../hooks/usePageTitle'
+import Card from '../components/Card'
 
 function ShoppingListPage() {
   const auth = useAuth()
@@ -61,29 +62,31 @@ function ShoppingListPage() {
         </p>
       )}
 
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 divide-y divide-gray-100">
-        {shoppingList.items.map(function (item) {
-          return (
-            <div key={item.ingredientName} className="p-4">
-              <p className="font-semibold text-gray-900">{item.ingredientName}</p>
+      <Card>
+        <div className="divide-y divide-gray-100 -m-6">
+          {shoppingList.items.map(function (item) {
+            return (
+              <div key={item.ingredientName} className="p-4">
+                <p className="font-semibold text-gray-900">{item.ingredientName}</p>
 
-              {item.category !== null && (
-                <p className="text-xs text-gray-500 uppercase tracking-wide">{item.category}</p>
-              )}
+                {item.category !== null && (
+                  <p className="text-xs text-gray-500 uppercase tracking-wide">{item.category}</p>
+                )}
 
-              <ul className="mt-1">
-                {item.quantities.map(function (quantityLine, index) {
-                  return (
-                    <li key={index} className="text-sm text-gray-700">
-                      {quantityLine.quantity} {quantityLine.unit}
-                    </li>
-                  )
-                })}
-              </ul>
-            </div>
-          )
-        })}
-      </div>
+                <ul className="mt-1">
+                  {item.quantities.map(function (quantityLine, index) {
+                    return (
+                      <li key={index} className="text-sm text-gray-700">
+                        {quantityLine.quantity} {quantityLine.unit}
+                      </li>
+                    )
+                  })}
+                </ul>
+              </div>
+            )
+          })}
+        </div>
+      </Card>
     </div>
   )
 }

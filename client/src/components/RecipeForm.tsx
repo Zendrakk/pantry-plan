@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import Button from './Button'
+import LinkButton from './LinkButton'
 import type { IngredientLine, Unit, CreateRecipeRequest } from '../types/recipe'
 
 const unitOptions: Unit[] = [
@@ -212,27 +213,23 @@ function RecipeForm(props: RecipeFormProps) {
                 })}
               </select>
 
-              <button
+              <Button
                 type="button"
+                variant="danger"
+                disabled={ingredients.length === 1}
                 onClick={function () {
                   handleRemoveIngredientClick(index)
                 }}
-                disabled={ingredients.length === 1}
-                className="text-red-600 px-2 disabled:text-gray-300"
               >
                 Remove
-              </button>
+              </Button>
             </div>
           )
         })}
 
-        <button
-          type="button"
-          onClick={handleAddIngredientClick}
-          className="text-blue-600 text-sm hover:underline mt-1"
-        >
+        <Button type="button" variant="secondary" onClick={handleAddIngredientClick}>
           + Add Ingredient
-        </button>
+        </Button>
       </div>
 
       {errorMessage !== '' && (
@@ -240,20 +237,13 @@ function RecipeForm(props: RecipeFormProps) {
       )}
 
       <div className="flex gap-2">
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:bg-blue-300"
-        >
+        <Button type="submit" variant="primary" disabled={isSubmitting}>
           {isSubmitting ? props.submittingButtonLabel : props.submitButtonLabel}
-        </button>
+        </Button>
 
-        <Link
-          to={props.cancelTo}
-          className="px-4 py-2 rounded-md text-gray-700 hover:bg-gray-100"
-        >
+        <LinkButton to={props.cancelTo} variant="secondary">
           Cancel
-        </Link>
+        </LinkButton>
       </div>
     </form>
   )

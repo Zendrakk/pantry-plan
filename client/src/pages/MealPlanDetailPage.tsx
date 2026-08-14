@@ -6,6 +6,9 @@ import { listRecipes } from '../api/recipes'
 import type { MealPlan, MealType } from '../types/mealPlan'
 import type { RecipeSummary } from '../types/recipe'
 import usePageTitle from '../hooks/usePageTitle'
+import Button from '../components/Button'
+import LinkButton from '../components/LinkButton'
+import Card from '../components/Card'
 
 const mealTypeOptions: MealType[] = ['Breakfast', 'Lunch', 'Dinner', 'Snack']
 
@@ -132,125 +135,118 @@ function MealPlanDetailPage() {
       <div className="flex items-center justify-between mt-4 mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Week of {mealPlan.weekStartDate}</h1>
         <div className="flex gap-2">
-          <Link
-            to={'/meal-plans/' + mealPlan.id + '/shopping-list'}
-            className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-700"
-          >
+          <LinkButton to={'/meal-plans/' + mealPlan.id + '/shopping-list'} variant="primary">
             View Shopping List
-          </Link>
-          <button
-            onClick={handleDeleteMealPlanClick}
-            className="bg-red-600 text-white px-4 py-2 rounded-md text-sm hover:bg-red-700"
-          >
-            Delete Plan
-          </button>
+          </LinkButton>
+          <Button type="button" variant="danger" onClick={handleDeleteMealPlanClick}>
+            Delete
+          </Button>
         </div>
       </div>
 
-      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 mb-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-3">Planned Meals</h2>
+      <div className="mb-6">
+        <Card>
+          <h2 className="text-lg font-semibold text-gray-900 mb-3">Planned Meals</h2>
 
-        {mealPlan.entries.length === 0 && (
-          <p className="text-gray-600 mb-3">No meals planned yet.</p>
-        )}
+          {mealPlan.entries.length === 0 && (
+            <p className="text-gray-600 mb-3">No meals planned yet.</p>
+          )}
 
-        <ul className="space-y-2 mb-4">
-          {mealPlan.entries.map(function (entry) {
-            return (
-              <li key={entry.id} className="flex items-center justify-between border-b border-gray-100 pb-2">
-                <span className="text-gray-700">
-                  {entry.date} &middot; {entry.mealType} &middot; {entry.recipeTitle}
-                </span>
-                <button
-                  onClick={function () {
-                    handleRemoveEntryClick(entry.id)
+          <ul className="space-y-2 mb-4">
+            {mealPlan.entries.map(function (entry) {
+              return (
+                <li key={entry.id} className="flex items-center justify-between border-b border-gray-100 pb-2">
+                  <span className="text-gray-700">
+                    {entry.date} &middot; {entry.mealType} &middot; {entry.recipeTitle}
+                  </span>
+                  <Button
+                    type="button"
+                    variant="danger"
+                    onClick={function () {
+                      handleRemoveEntryClick(entry.id)
+                    }}
+                  >
+                    Remove
+                  </Button>
+                </li>
+              )
+            })}
+          </ul>
+
+          {recipes.length === 0 && (
+            <p className="text-gray-600 text-sm">
+              You don't have any recipes yet. Create one before planning meals.
+            </p>
+          )}
+
+          {recipes.length > 0 && (
+            <form onSubmit={handleAddEntrySubmit} className="flex gap-2 items-end flex-wrap">
+              <div>
+                <label htmlFor="recipeSelect" className="block text-sm font-medium text-gray-700 mb-1">
+                  Recipe
+                </label>
+                <select
+                  id="recipeSelect"
+                  value={selectedRecipeId}
+                  onChange={function (event) {
+                    setSelectedRecipeId(event.target.value)
                   }}
-                  className="text-sm text-red-600 hover:underline"
+                  className="border border-gray-300 rounded-md px-3 py-2"
                 >
-                  Remove
-                </button>
-              </li>
-            )
-          })}
-        </ul>
+                  {recipes.map(function (recipeSummary) {
+                    return (
+                      <option key={recipeSummary.id} value={recipeSummary.id}>
+                        {recipeSummary.title}
+                      </option>
+                    )
+                  })}
+                </select>
+              </div>
 
-        {recipes.length === 0 && (
-          <p className="text-gray-600 text-sm">
-            You don't have any recipes yet. Create one before planning meals.
-          </p>
-        )}
+              <div>
+                <label htmlFor="entryDate" className="block text-sm font-medium text-gray-700 mb-1">
+                  Date
+                </label>
+                <input
+                  id="entryDate"
+                  type="date"
+                  value={entryDate}
+                  onChange={function (event) {
+                    setEntryDate(event.target.value)
+                  }}
+                  required
+                  className="border border-gray-300 rounded-md px-3 py-2"
+                />
+              </div>
 
-        {recipes.length > 0 && (
-          <form onSubmit={handleAddEntrySubmit} className="flex gap-2 items-end flex-wrap">
-            <div>
-              <label htmlFor="recipeSelect" className="block text-sm font-medium text-gray-700 mb-1">
-                Recipe
-              </label>
-              <select
-                id="recipeSelect"
-                value={selectedRecipeId}
-                onChange={function (event) {
-                  setSelectedRecipeId(event.target.value)
-                }}
-                className="border border-gray-300 rounded-md px-3 py-2"
-              >
-                {recipes.map(function (recipeSummary) {
-                  return (
-                    <option key={recipeSummary.id} value={recipeSummary.id}>
-                      {recipeSummary.title}
-                    </option>
-                  )
-                })}
-              </select>
-            </div>
+              <div>
+                <label htmlFor="mealTypeSelect" className="block text-sm font-medium text-gray-700 mb-1">
+                  Meal
+                </label>
+                <select
+                  id="mealTypeSelect"
+                  value={selectedMealType}
+                  onChange={function (event) {
+                    setSelectedMealType(event.target.value as MealType)
+                  }}
+                  className="border border-gray-300 rounded-md px-3 py-2"
+                >
+                  {mealTypeOptions.map(function (mealTypeOption) {
+                    return (
+                      <option key={mealTypeOption} value={mealTypeOption}>
+                        {mealTypeOption}
+                      </option>
+                    )
+                  })}
+                </select>
+              </div>
 
-            <div>
-              <label htmlFor="entryDate" className="block text-sm font-medium text-gray-700 mb-1">
-                Date
-              </label>
-              <input
-                id="entryDate"
-                type="date"
-                value={entryDate}
-                onChange={function (event) {
-                  setEntryDate(event.target.value)
-                }}
-                required
-                className="border border-gray-300 rounded-md px-3 py-2"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="mealTypeSelect" className="block text-sm font-medium text-gray-700 mb-1">
-                Meal
-              </label>
-              <select
-                id="mealTypeSelect"
-                value={selectedMealType}
-                onChange={function (event) {
-                  setSelectedMealType(event.target.value as MealType)
-                }}
-                className="border border-gray-300 rounded-md px-3 py-2"
-              >
-                {mealTypeOptions.map(function (mealTypeOption) {
-                  return (
-                    <option key={mealTypeOption} value={mealTypeOption}>
-                      {mealTypeOption}
-                    </option>
-                  )
-                })}
-              </select>
-            </div>
-
-            <button
-              type="submit"
-              disabled={isAddingEntry}
-              className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:bg-blue-300"
-            >
-              {isAddingEntry ? 'Adding...' : 'Add Meal'}
-            </button>
-          </form>
-        )}
+              <Button type="submit" variant="primary" disabled={isAddingEntry}>
+                {isAddingEntry ? 'Adding...' : 'Add Meal'}
+              </Button>
+            </form>
+          )}
+        </Card>
       </div>
     </div>
   )
