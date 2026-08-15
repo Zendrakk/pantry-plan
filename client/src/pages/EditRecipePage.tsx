@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth/useAuth'
 import { getRecipe, updateRecipe } from '../api/recipes'
+import { useToast } from '../toast/useToast'
 import RecipeForm from '../components/RecipeForm'
 import type { Recipe, CreateRecipeRequest } from '../types/recipe'
 import usePageTitle from '../hooks/usePageTitle'
@@ -11,6 +12,7 @@ function EditRecipePage() {
   const auth = useAuth()
   const navigate = useNavigate()
   const params = useParams()
+  const toast = useToast()
   const recipeId = params.recipeId
 
   const [recipe, setRecipe] = useState<Recipe | null>(null)
@@ -52,6 +54,7 @@ function EditRecipePage() {
     }
 
     await updateRecipe(auth.accessToken, recipeId, formData)
+    toast.showToast('Recipe updated.', 'success')
     navigate('/recipes/' + recipeId)
   }
 

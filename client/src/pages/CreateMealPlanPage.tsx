@@ -1,13 +1,15 @@
 import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth/useAuth'
 import { createMealPlan } from '../api/mealPlans'
+import { useToast } from '../toast/useToast'
 import usePageTitle from '../hooks/usePageTitle'
 import Button from '../components/Button'
 import LinkButton from '../components/LinkButton'
 
 function CreateMealPlanPage() {
   const auth = useAuth()
+  const toast = useToast()
   const navigate = useNavigate()
 
   const [weekStartDate, setWeekStartDate] = useState<string>('')
@@ -34,6 +36,7 @@ function CreateMealPlanPage() {
 
     try {
       const createdMealPlan = await createMealPlan(auth.accessToken, weekStartDate)
+      toast.showToast('Meal plan created.', 'success')
       navigate('/meal-plans/' + createdMealPlan.id)
     } catch {
       setErrorMessage('Failed to create meal plan. Please try again.')

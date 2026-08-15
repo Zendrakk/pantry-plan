@@ -2,11 +2,13 @@ import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../auth/useAuth'
 import { ApiError } from '../api/client'
+import { useToast } from '../toast/useToast'
 import usePageTitle from '../hooks/usePageTitle'
 import Button from '../components/Button'
 
 function RegisterPage() {
   const auth = useAuth()
+  const toast = useToast()
   const navigate = useNavigate()
   
   usePageTitle('Create Account')
@@ -48,6 +50,7 @@ function RegisterPage() {
 
     try {
       await auth.register(email, password)
+      toast.showToast('Account created. Please log in.', 'success')
       navigate('/login')
     } catch (error) {
       if (error instanceof ApiError) {

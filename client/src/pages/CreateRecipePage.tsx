@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth/useAuth'
 import { createRecipe } from '../api/recipes'
+import { useToast } from '../toast/useToast'
 import RecipeForm from '../components/RecipeForm'
 import type { CreateRecipeRequest, IngredientLine } from '../types/recipe'
 import usePageTitle from '../hooks/usePageTitle'
@@ -15,6 +16,7 @@ function createBlankIngredientLine(): IngredientLine {
 
 function CreateRecipePage() {
   const auth = useAuth()
+  const toast = useToast()
   const navigate = useNavigate()
   
   usePageTitle('New Recipe')
@@ -25,6 +27,7 @@ function CreateRecipePage() {
     }
 
     const createdRecipe = await createRecipe(auth.accessToken, formData)
+    toast.showToast('Recipe created.', 'success')
     navigate('/recipes/' + createdRecipe.id)
   }
 
