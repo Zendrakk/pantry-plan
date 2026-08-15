@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth/useAuth'
 import { getMealPlan, addMealPlanEntry, removeMealPlanEntry, deleteMealPlan } from '../api/mealPlans'
 import { listRecipes } from '../api/recipes'
+import { useToast } from '../toast/useToast'
 import type { MealPlan, MealType } from '../types/mealPlan'
 import type { RecipeSummary } from '../types/recipe'
 import usePageTitle from '../hooks/usePageTitle'
@@ -17,6 +18,7 @@ function MealPlanDetailPage() {
   const auth = useAuth()
   const params = useParams()
   const navigate = useNavigate()
+  const toast = useToast()
   const mealPlanId = params.mealPlanId
 
   const [mealPlan, setMealPlan] = useState<MealPlan | null>(null)
@@ -81,8 +83,9 @@ function MealPlanDetailPage() {
       )
       setMealPlan(updatedMealPlan)
       setEntryDate('')
+      toast.showToast('Meal added.', 'success')
     } catch {
-      setErrorMessage('Failed to add that meal. Please try again.')
+      toast.showToast('Failed to add that meal. Please try again.', 'error')
     } finally {
       setIsAddingEntry(false)
     }
@@ -96,8 +99,9 @@ function MealPlanDetailPage() {
     try {
       const updatedMealPlan = await removeMealPlanEntry(auth.accessToken, mealPlanId, entryId)
       setMealPlan(updatedMealPlan)
+      toast.showToast('Meal removed.', 'success')
     } catch {
-      setErrorMessage('Failed to remove that meal. Please try again.')
+      toast.showToast('Failed to remove that meal. Please try again.', 'error')
     }
   }
 
@@ -113,9 +117,10 @@ function MealPlanDetailPage() {
 
     try {
       await deleteMealPlan(auth.accessToken, mealPlanId)
+      toast.showToast('Meal plan deleted.', 'success')
       navigate('/meal-plans')
     } catch {
-      setErrorMessage('Failed to delete this meal plan. Please try again.')
+      toast.showToast('Failed to delete this meal plan. Please try again.', 'error')
     }
   }
 

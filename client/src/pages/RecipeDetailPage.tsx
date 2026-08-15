@@ -2,10 +2,11 @@ import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useAuth } from '../auth/useAuth'
 import { getRecipe } from '../api/recipes'
-import type { Recipe } from '../types/recipe'
 import { useNavigate } from 'react-router-dom'
 import { deleteRecipe } from '../api/recipes'
 import { ApiError } from '../api/client'
+import { useToast } from '../toast/useToast'
+import type { Recipe } from '../types/recipe'
 import usePageTitle from '../hooks/usePageTitle'
 import Button from '../components/Button'
 import LinkButton from '../components/LinkButton'
@@ -16,6 +17,7 @@ function RecipeDetailPage() {
   const auth = useAuth()
   const navigate = useNavigate()
   const params = useParams()
+  const toast = useToast()
   const recipeId = params.recipeId
 
   const [recipe, setRecipe] = useState<Recipe | null>(null)
@@ -67,12 +69,13 @@ function RecipeDetailPage() {
 
     try {
       await deleteRecipe(auth.accessToken, recipeId)
+      toast.showToast('Recipe deleted.', 'success')
       navigate('/recipes')
     } catch (error) {
       if (error instanceof ApiError && error.status === 409) {
-        setErrorMessage('This recipe is used in a meal plan and cannot be deleted.')
+        toast.showToast('This recipe is used in a meal plan and cannot be deleted.', 'error')
       } else {
-        setErrorMessage('Failed to delete this recipe. Please try again.')
+        toast.showToast('Failed to delete this recipe. Please try again.', 'error')
       }
     }
   }
