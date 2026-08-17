@@ -38,9 +38,7 @@ function RegisterPage() {
     setErrorMessage('')
 
     // Check the passwords match before we even bother calling the API.
-    // This is a client-side-only check purely for a faster, friendlier
-    // experience - the backend still enforces its own password rules
-    // independently.
+    // The backend still enforces its own password rules independently.
     if (password !== confirmPassword) {
       setErrorMessage('Passwords do not match.')
       return
@@ -131,10 +129,9 @@ function RegisterPage() {
   )
 }
 
-// The backend's Identity validation can return several different error
-// messages depending on what's wrong with the password (too short,
-// missing a digit, missing a symbol, etc). This function tries to pull
-// out something readable to show the user, falling back to a generic
+// The backend's Identity validation can return several different error messages depending on 
+// what's wrong with the password (too short, missing a digit, missing a symbol, etc). This 
+// function tries to pull out something readable to show the user, falling back to a generic
 // message if the shape of the error response isn't what we expect.
 function extractErrorMessage(error: ApiError): string {
   const body = error.body

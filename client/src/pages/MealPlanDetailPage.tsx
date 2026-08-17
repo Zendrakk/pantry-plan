@@ -23,6 +23,7 @@ function MealPlanDetailPage() {
 
   const [mealPlan, setMealPlan] = useState<MealPlan | null>(null)
   const [recipes, setRecipes] = useState<RecipeSummary[] | null>(null)
+  const [isLeftoverChecked, setIsLeftoverChecked] = useState<boolean>(false)
   const [errorMessage, setErrorMessage] = useState<string>('')
 
   // Fields for the "add entry" form.
@@ -79,10 +80,12 @@ function MealPlanDetailPage() {
         mealPlanId,
         selectedRecipeId,
         entryDate,
-        selectedMealType
+        selectedMealType,
+        isLeftoverChecked
       )
       setMealPlan(updatedMealPlan)
       setEntryDate('')
+      setIsLeftoverChecked(false)
       toast.showToast('Meal added.', 'success')
     } catch {
       toast.showToast('Failed to add that meal. Please try again.', 'error')
@@ -164,6 +167,9 @@ function MealPlanDetailPage() {
                 <li key={entry.id} className="flex items-center justify-between border-b border-gray-100 pb-2">
                   <span className="text-gray-700">
                     {entry.date} &middot; {entry.mealType} &middot; {entry.recipeTitle}
+                    {entry.isLeftover && (
+                      <span className="ml-2 text-xs text-gray-500 italic">(leftovers)</span>
+                    )}
                   </span>
                   <Button
                     type="button"
@@ -245,6 +251,21 @@ function MealPlanDetailPage() {
                     )
                   })}
                 </select>
+              </div>
+
+              <div className="flex items-center gap-2 pb-2">
+                <input
+                  id="isLeftover"
+                  type="checkbox"
+                  checked={isLeftoverChecked}
+                  onChange={function (event) {
+                    setIsLeftoverChecked(event.target.checked)
+                  }}
+                  className="h-4 w-4"
+                />
+                <label htmlFor="isLeftover" className="text-sm text-gray-700">
+                  This is leftovers (don't add to shopping list)
+                </label>
               </div>
 
               <Button type="submit" variant="primary" disabled={isAddingEntry}>

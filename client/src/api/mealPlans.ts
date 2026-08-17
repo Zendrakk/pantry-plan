@@ -41,11 +41,12 @@ export async function addMealPlanEntry(
   mealPlanId: string,
   recipeId: string,
   date: string,
-  mealType: string
+  mealType: string,
+  isLeftover: boolean
 ): Promise<MealPlan> {
   const result = await apiRequest<MealPlan>('/mealplans/' + mealPlanId + '/entries', {
     method: 'POST',
-    body: { recipeId: recipeId, date: date, mealType: mealType },
+    body: { recipeId: recipeId, date: date, mealType: mealType, isLeftover: isLeftover },
     accessToken: accessToken,
   })
 

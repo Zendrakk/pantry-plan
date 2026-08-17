@@ -8,6 +8,7 @@ export interface MealPlanEntry {
   recipeTitle: string
   date: string
   mealType: MealType
+  isLeftover: boolean
 }
 
 export interface MealPlan {
