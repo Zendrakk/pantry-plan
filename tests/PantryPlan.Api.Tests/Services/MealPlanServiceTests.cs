@@ -32,7 +32,7 @@ namespace PantryPlan.Api.Tests.Services
             var mealPlan = await mealPlanService.CreateMealPlanAsync("user-1", new CreateMealPlanRequest(new DateOnly(2026, 7, 20)));
 
             var result = await mealPlanService.AddEntryAsync("user-1", mealPlan.Id,
-                new AddMealPlanEntryRequest(recipe.Id, new DateOnly(2026, 7, 20), MealType.Dinner));
+                new AddMealPlanEntryRequest(recipe.Id, new DateOnly(2026, 7, 20), MealType.Dinner, false));
 
             Assert.NotNull(result);
             Assert.Single(result!.Entries);
@@ -53,7 +53,7 @@ namespace PantryPlan.Api.Tests.Services
 
             await Assert.ThrowsAsync<ArgumentException>(() =>
                 mealPlanService.AddEntryAsync("user-1", mealPlan.Id,
-                    new AddMealPlanEntryRequest(otherUsersRecipe.Id, new DateOnly(2026, 7, 20), MealType.Dinner)));
+                    new AddMealPlanEntryRequest(otherUsersRecipe.Id, new DateOnly(2026, 7, 20), MealType.Dinner, false)));
         }
 
         [Fact]
@@ -68,7 +68,7 @@ namespace PantryPlan.Api.Tests.Services
             var mealPlan = await mealPlanService.CreateMealPlanAsync("user-1", new CreateMealPlanRequest(new DateOnly(2026, 7, 20)));
 
             var result = await mealPlanService.AddEntryAsync("user-2", mealPlan.Id,
-                new AddMealPlanEntryRequest(recipe.Id, new DateOnly(2026, 7, 20), MealType.Dinner));
+                new AddMealPlanEntryRequest(recipe.Id, new DateOnly(2026, 7, 20), MealType.Dinner, false));
 
             Assert.Null(result);
         }
@@ -84,7 +84,7 @@ namespace PantryPlan.Api.Tests.Services
                 "Pancakes", "Mix and cook", 4, [new IngredientLineRequest("Flour", 2, Unit.Cup)]));
             var mealPlan = await mealPlanService.CreateMealPlanAsync("user-1", new CreateMealPlanRequest(new DateOnly(2026, 7, 20)));
             var afterAdd = await mealPlanService.AddEntryAsync("user-1", mealPlan.Id,
-                new AddMealPlanEntryRequest(recipe.Id, new DateOnly(2026, 7, 20), MealType.Dinner));
+                new AddMealPlanEntryRequest(recipe.Id, new DateOnly(2026, 7, 20), MealType.Dinner, false));
 
             var result = await mealPlanService.RemoveEntryAsync("user-1", mealPlan.Id, afterAdd!.Entries[0].Id);
 
@@ -106,9 +106,9 @@ namespace PantryPlan.Api.Tests.Services
             var mealPlan = await mealPlanService.CreateMealPlanAsync("user-1", new CreateMealPlanRequest(new DateOnly(2026, 7, 20)));
 
             await mealPlanService.AddEntryAsync("user-1", mealPlan.Id,
-                new AddMealPlanEntryRequest(recipeOne.Id, new DateOnly(2026, 7, 20), MealType.Dinner));
+                new AddMealPlanEntryRequest(recipeOne.Id, new DateOnly(2026, 7, 20), MealType.Dinner, false));
             await mealPlanService.AddEntryAsync("user-1", mealPlan.Id,
-                new AddMealPlanEntryRequest(recipeTwo.Id, new DateOnly(2026, 7, 21), MealType.Breakfast));
+                new AddMealPlanEntryRequest(recipeTwo.Id, new DateOnly(2026, 7, 21), MealType.Breakfast, false));
 
             var shoppingList = await mealPlanService.GetShoppingListAsync("user-1", mealPlan.Id);
 
@@ -133,9 +133,9 @@ namespace PantryPlan.Api.Tests.Services
             var mealPlan = await mealPlanService.CreateMealPlanAsync("user-1", new CreateMealPlanRequest(new DateOnly(2026, 7, 20)));
 
             await mealPlanService.AddEntryAsync("user-1", mealPlan.Id,
-                new AddMealPlanEntryRequest(recipeOne.Id, new DateOnly(2026, 7, 20), MealType.Dinner));
+                new AddMealPlanEntryRequest(recipeOne.Id, new DateOnly(2026, 7, 20), MealType.Dinner, false));
             await mealPlanService.AddEntryAsync("user-1", mealPlan.Id,
-                new AddMealPlanEntryRequest(recipeTwo.Id, new DateOnly(2026, 7, 21), MealType.Breakfast));
+                new AddMealPlanEntryRequest(recipeTwo.Id, new DateOnly(2026, 7, 21), MealType.Breakfast, false));
 
             var shoppingList = await mealPlanService.GetShoppingListAsync("user-1", mealPlan.Id);
 
@@ -155,9 +155,9 @@ namespace PantryPlan.Api.Tests.Services
             var mealPlan = await mealPlanService.CreateMealPlanAsync("user-1", new CreateMealPlanRequest(new DateOnly(2026, 7, 20)));
 
             await mealPlanService.AddEntryAsync("user-1", mealPlan.Id,
-                new AddMealPlanEntryRequest(recipe.Id, new DateOnly(2026, 7, 20), MealType.Dinner));
+                new AddMealPlanEntryRequest(recipe.Id, new DateOnly(2026, 7, 20), MealType.Dinner, false));
             await mealPlanService.AddEntryAsync("user-1", mealPlan.Id,
-                new AddMealPlanEntryRequest(recipe.Id, new DateOnly(2026, 7, 22), MealType.Dinner));
+                new AddMealPlanEntryRequest(recipe.Id, new DateOnly(2026, 7, 22), MealType.Dinner, false));
 
             var shoppingList = await mealPlanService.GetShoppingListAsync("user-1", mealPlan.Id);
 
@@ -188,6 +188,52 @@ namespace PantryPlan.Api.Tests.Services
             var shoppingList = await mealPlanService.GetShoppingListAsync("user-1", mealPlan.Id);
 
             Assert.NotNull(shoppingList);
+            Assert.Empty(shoppingList!.Items);
+        }
+
+        [Fact]
+        public async Task GetShoppingListAsync_WithLeftoverEntry_ExcludesItFromShoppingList()
+        {
+            await using var db = TestHelpers.CreateDbContext();
+            var recipeService = new RecipeService(db);
+            var mealPlanService = new MealPlanService(db);
+
+            var recipe = await recipeService.CreateRecipeAsync("user-1", new CreateRecipeRequest(
+                "Chili", "Instructions", 4, [new IngredientLineRequest("Beans", 2, Unit.Cup)]));
+            var mealPlan = await mealPlanService.CreateMealPlanAsync("user-1", new CreateMealPlanRequest(new DateOnly(2026, 7, 20)));
+
+            // Planned once as the "real" cooking occurrence...
+            await mealPlanService.AddEntryAsync("user-1", mealPlan.Id,
+                new AddMealPlanEntryRequest(recipe.Id, new DateOnly(2026, 7, 20), MealType.Dinner, false));
+
+            // ...and again later in the week as leftovers - should NOT add a
+            // second round of ingredients to the shopping list.
+            await mealPlanService.AddEntryAsync("user-1", mealPlan.Id,
+                new AddMealPlanEntryRequest(recipe.Id, new DateOnly(2026, 7, 22), MealType.Dinner, true));
+
+            var shoppingList = await mealPlanService.GetShoppingListAsync("user-1", mealPlan.Id);
+
+            var beansItem = Assert.Single(shoppingList!.Items, i => i.IngredientName == "Beans");
+            var quantity = Assert.Single(beansItem.Quantities);
+            Assert.Equal(2, quantity.Quantity);
+        }
+
+        [Fact]
+        public async Task GetShoppingListAsync_WithOnlyLeftoverEntries_ReturnsNoItemsForThatIngredient()
+        {
+            await using var db = TestHelpers.CreateDbContext();
+            var recipeService = new RecipeService(db);
+            var mealPlanService = new MealPlanService(db);
+
+            var recipe = await recipeService.CreateRecipeAsync("user-1", new CreateRecipeRequest(
+                "Chili", "Instructions", 4, [new IngredientLineRequest("Beans", 2, Unit.Cup)]));
+            var mealPlan = await mealPlanService.CreateMealPlanAsync("user-1", new CreateMealPlanRequest(new DateOnly(2026, 7, 20)));
+
+            await mealPlanService.AddEntryAsync("user-1", mealPlan.Id,
+                new AddMealPlanEntryRequest(recipe.Id, new DateOnly(2026, 7, 20), MealType.Dinner, true));
+
+            var shoppingList = await mealPlanService.GetShoppingListAsync("user-1", mealPlan.Id);
+
             Assert.Empty(shoppingList!.Items);
         }
     }

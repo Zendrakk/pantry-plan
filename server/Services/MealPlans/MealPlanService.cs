@@ -78,7 +78,8 @@ namespace PantryPlan.Api.Services.MealPlans
                 MealPlanId = mealPlan.Id,
                 RecipeId = request.RecipeId,
                 Date = request.Date,
-                MealType = request.MealType
+                MealType = request.MealType,
+                IsLeftover = request.IsLeftover
             });
 
             await db.SaveChangesAsync();
@@ -119,7 +120,7 @@ namespace PantryPlan.Api.Services.MealPlans
             }
 
             var recipeIngredients = await db.MealPlanEntries
-                .Where(e => e.MealPlanId == mealPlanId)
+                .Where(e => e.MealPlanId == mealPlanId && !e.IsLeftover)
                 .SelectMany(e => e.Recipe.Ingredients)
                 .Include(ri => ri.Ingredient)
                 .ToListAsync();
@@ -146,7 +147,7 @@ namespace PantryPlan.Api.Services.MealPlans
             return new MealPlanResponse(
                 mealPlan.Id,
                 mealPlan.WeekStartDate,
-                mealPlan.Entries.Select(e => new MealPlanEntryResponse(e.Id, e.RecipeId, e.Recipe.Title, e.Date, e.MealType)).ToList()
+                mealPlan.Entries.Select(e => new MealPlanEntryResponse(e.Id, e.RecipeId, e.Recipe.Title, e.Date, e.MealType, e.IsLeftover)).ToList()
             );
         }
     }

@@ -9,5 +9,6 @@
         public Recipe Recipe { get; set; } = null!;
         public DateOnly Date { get; set; }
         public MealType MealType { get; set; }
+        public bool IsLeftover { get; set; } = false;
     }
 }
