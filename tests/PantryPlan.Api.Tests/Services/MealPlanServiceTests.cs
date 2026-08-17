@@ -236,5 +236,51 @@ namespace PantryPlan.Api.Tests.Services
 
             Assert.Empty(shoppingList!.Items);
         }
+
+        [Fact]
+        public async Task GetMealPlanAsync_ReturnsEntriesSortedByDateThenMealType()
+        {
+            await using var db = TestHelpers.CreateDbContext();
+            var recipeService = new RecipeService(db);
+            var mealPlanService = new MealPlanService(db);
+
+            var recipe = await recipeService.CreateRecipeAsync("user-1", new CreateRecipeRequest(
+                "Simple Meal", "Instructions", 2, [new IngredientLineRequest("Rice", 1, Unit.Cup)]));
+            var mealPlan = await mealPlanService.CreateMealPlanAsync("user-1", new CreateMealPlanRequest(new DateOnly(2026, 7, 20)));
+
+            // Add entries deliberately out of order, mixing both dates and meal types, to prove the sort
+            // actually reorders them rather than just happening to already be in order.
+            await mealPlanService.AddEntryAsync("user-1", mealPlan.Id,
+                new AddMealPlanEntryRequest(recipe.Id, new DateOnly(2026, 7, 21), MealType.Snack, false));
+            await mealPlanService.AddEntryAsync("user-1", mealPlan.Id,
+                new AddMealPlanEntryRequest(recipe.Id, new DateOnly(2026, 7, 20), MealType.Dinner, false));
+            await mealPlanService.AddEntryAsync("user-1", mealPlan.Id,
+                new AddMealPlanEntryRequest(recipe.Id, new DateOnly(2026, 7, 20), MealType.Breakfast, false));
+            await mealPlanService.AddEntryAsync("user-1", mealPlan.Id,
+                new AddMealPlanEntryRequest(recipe.Id, new DateOnly(2026, 7, 21), MealType.Lunch, false));
+            await mealPlanService.AddEntryAsync("user-1", mealPlan.Id,
+                new AddMealPlanEntryRequest(recipe.Id, new DateOnly(2026, 7, 20), MealType.Lunch, false));
+
+            var result = await mealPlanService.GetMealPlanAsync("user-1", mealPlan.Id);
+
+            Assert.NotNull(result);
+            Assert.Equal(5, result!.Entries.Count);
+
+            // Expected order: 7/20 Breakfast, 7/20 Lunch, 7/20 Dinner, 7/21 Lunch, 7/21 Snack
+            Assert.Equal(new DateOnly(2026, 7, 20), result.Entries[0].Date);
+            Assert.Equal(MealType.Breakfast, result.Entries[0].MealType);
+
+            Assert.Equal(new DateOnly(2026, 7, 20), result.Entries[1].Date);
+            Assert.Equal(MealType.Lunch, result.Entries[1].MealType);
+
+            Assert.Equal(new DateOnly(2026, 7, 20), result.Entries[2].Date);
+            Assert.Equal(MealType.Dinner, result.Entries[2].MealType);
+
+            Assert.Equal(new DateOnly(2026, 7, 21), result.Entries[3].Date);
+            Assert.Equal(MealType.Lunch, result.Entries[3].MealType);
+
+            Assert.Equal(new DateOnly(2026, 7, 21), result.Entries[4].Date);
+            Assert.Equal(MealType.Snack, result.Entries[4].MealType);
+        }
     }
 }

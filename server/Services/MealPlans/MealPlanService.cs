@@ -144,10 +144,16 @@ namespace PantryPlan.Api.Services.MealPlans
 
         private static MealPlanResponse MapToResponse(MealPlan mealPlan)
         {
+            var sortedEntries = mealPlan.Entries
+                .OrderBy(e => e.Date)
+                .ThenBy(e => e.MealType)
+                .Select(e => new MealPlanEntryResponse(e.Id, e.RecipeId, e.Recipe.Title, e.Date, e.MealType, e.IsLeftover))
+                .ToList();
+
             return new MealPlanResponse(
                 mealPlan.Id,
                 mealPlan.WeekStartDate,
-                mealPlan.Entries.Select(e => new MealPlanEntryResponse(e.Id, e.RecipeId, e.Recipe.Title, e.Date, e.MealType, e.IsLeftover)).ToList()
+                sortedEntries
             );
         }
     }
