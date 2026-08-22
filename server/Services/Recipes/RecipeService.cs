@@ -68,6 +68,7 @@ namespace PantryPlan.Api.Services.Recipes
         {
             return await db.Recipes
                 .Where(r => r.OwnerId == ownerId)
+                .OrderBy(r => r.Title)
                 .Select(r => new RecipeSummaryResponse(r.Id, r.Title, r.ServingSize, r.Ingredients.Count))
                 .ToListAsync();
         }

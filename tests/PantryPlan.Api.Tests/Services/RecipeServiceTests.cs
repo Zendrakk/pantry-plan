@@ -136,5 +136,28 @@ namespace PantryPlan.Api.Tests.Services
             Assert.False(deleted);
             Assert.NotNull(stillExists);
         }
+
+        [Fact]
+        public async Task ListRecipesAsync_ReturnsRecipesSortedAlphabeticallyByTitle()
+        {
+            await using var db = TestHelpers.CreateDbContext();
+            var service = new RecipeService(db);
+
+            // Create recipes deliberately out of alphabetical order, so a
+            // passing result can only mean the sort actually reordered them.
+            await service.CreateRecipeAsync("user-1", new CreateRecipeRequest(
+                "Zucchini Bread", "Instructions", 2, [new IngredientLineRequest("Zucchini", 1, Unit.Cup)]));
+            await service.CreateRecipeAsync("user-1", new CreateRecipeRequest(
+                "Apple Pie", "Instructions", 2, [new IngredientLineRequest("Apple", 1, Unit.Cup)]));
+            await service.CreateRecipeAsync("user-1", new CreateRecipeRequest(
+                "Mango Salsa", "Instructions", 2, [new IngredientLineRequest("Mango", 1, Unit.Cup)]));
+
+            var result = await service.ListRecipesAsync("user-1");
+
+            Assert.Equal(3, result.Count);
+            Assert.Equal("Apple Pie", result[0].Title);
+            Assert.Equal("Mango Salsa", result[1].Title);
+            Assert.Equal("Zucchini Bread", result[2].Title);
+        }
     }
 }
