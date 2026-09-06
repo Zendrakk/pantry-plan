@@ -86,4 +86,18 @@ describe('RecipeForm', function () {
     })
   })
 
+  test('shows an error message when onSubmit fails', async function () {
+    const user = userEvent.setup()
+    const handleSubmit = vi.fn().mockRejectedValue(new Error('Server error'))
+    renderRecipeForm(handleSubmit)
+
+    await user.type(screen.getByLabelText('Title'), 'Pancakes')
+    await user.type(screen.getByLabelText('Instructions'), 'Mix and cook')
+    await user.type(screen.getByPlaceholderText('Ingredient name'), 'Flour')
+
+    await user.click(screen.getByText('Create Recipe'))
+
+    expect(await screen.findByText('Something went wrong. Please check your entries and try again.')).toBeInTheDocument()
+    })
+
 })
