@@ -26,7 +26,15 @@ jobs:
         run: dotnet build --no-restore --configuration Release
 
       - name: Run tests
-        run: dotnet test --no-build --configuration Release --verbosity normal
+        run: dotnet test --no-build --configuration Release --logger "trx;LogFileName=test-results.trx"
+      
+      - name: Publish test summary
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: .NET Test Report
+          path: '**/test-results.trx'
+          reporter: dotnet-trx
   
   frontend-test:
     runs-on: ubuntu-latest
