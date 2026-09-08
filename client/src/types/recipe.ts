@@ -38,3 +38,8 @@ export interface CreateRecipeRequest {
   servingSize: number
   ingredients: IngredientLine[]
 }
+
+export interface ConflictingMealPlan {
+  id: string
+  weekStartDate: string
+}

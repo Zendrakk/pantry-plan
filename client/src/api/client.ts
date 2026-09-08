@@ -1,3 +1,5 @@
+import type { ConflictingMealPlan } from "../types/recipe"
+
 const BASE_URL = '/api'
 
 export class ApiError extends Error {
@@ -83,4 +85,27 @@ export async function apiRequest<TResponse>(
 
   const data = JSON.parse(responseText)
   return data as TResponse
+}
+
+// Safely extracts a "mealPlans" array from an ApiError's body, if present.
+// Used specifically for the 409 conflict response when deleting a recipe
+// that's still referenced by one or more meal plans.
+export function extractConflictingMealPlans(error: ApiError): ConflictingMealPlan[] {
+  const body = error.body
+
+  if (body === null || typeof body !== 'object') {
+    return []
+  }
+
+  if (!('mealPlans' in body)) {
+    return []
+  }
+
+  const mealPlans = (body as { mealPlans: unknown }).mealPlans
+
+  if (!Array.isArray(mealPlans)) {
+    return []
+  }
+
+  return mealPlans as ConflictingMealPlan[]
 }

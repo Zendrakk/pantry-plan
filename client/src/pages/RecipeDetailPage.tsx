@@ -4,9 +4,9 @@ import { useAuth } from '../auth/useAuth'
 import { getRecipe } from '../api/recipes'
 import { useNavigate } from 'react-router-dom'
 import { deleteRecipe } from '../api/recipes'
-import { ApiError } from '../api/client'
+import { ApiError, extractConflictingMealPlans } from '../api/client'
 import { useToast } from '../toast/useToast'
-import type { Recipe } from '../types/recipe'
+import type { Recipe, ConflictingMealPlan } from '../types/recipe'
 import usePageTitle from '../hooks/usePageTitle'
 import Button from '../components/Button'
 import LinkButton from '../components/LinkButton'
@@ -22,6 +22,7 @@ function RecipeDetailPage() {
 
   const [recipe, setRecipe] = useState<Recipe | null>(null)
   const [errorMessage, setErrorMessage] = useState<string>('')
+  const [conflictingMealPlans, setConflictingMealPlans] = useState<ConflictingMealPlan[]>([])
 
   useEffect(function () {
 
@@ -67,6 +68,8 @@ function RecipeDetailPage() {
       return
     }
 
+    setConflictingMealPlans([])
+
     try {
       await deleteRecipe(auth.accessToken, recipeId)
       toast.showToast('Recipe deleted.', 'success')
@@ -74,6 +77,7 @@ function RecipeDetailPage() {
     } catch (error) {
       if (error instanceof ApiError && error.status === 409) {
         toast.showToast('This recipe is used in a meal plan and cannot be deleted.', 'error')
+        setConflictingMealPlans(extractConflictingMealPlans(error))
       } else {
         toast.showToast('Failed to delete this recipe. Please try again.', 'error')
       }
@@ -93,6 +97,23 @@ function RecipeDetailPage() {
       <Button type="button" variant="danger" onClick={handleDeleteClick}>
         Delete
       </Button>
+
+      {conflictingMealPlans.length > 0 && (
+        <div className="mt-2">
+          <p className="text-sm text-gray-700">This recipe is used in:</p>
+          <ul className="ml-4 list-disc">
+            {conflictingMealPlans.map(function (mealPlan) {
+              return (
+                <li key={mealPlan.id}>
+                  <Link to={'/meal-plans/' + mealPlan.id} className="text-sm text-blue-600 hover:underline">
+                    Week of {mealPlan.weekStartDate}
+                  </Link>
+                </li>
+              )
+            })}
+          </ul>
+        </div>
+      )}
 
       <div className="mt-4">
         <Card>
