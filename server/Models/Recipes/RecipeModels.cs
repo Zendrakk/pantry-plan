@@ -13,3 +13,5 @@ public record RecipeResponse(Guid Id, string Title, string Instructions, int Ser
 public record UpdateRecipeRequest(string Title, string Instructions, int ServingSize, List<IngredientLineRequest> Ingredients);
 
 public record RecipeSummaryResponse(Guid Id, string Title, int ServingSize, int IngredientCount);
+
+public record RecipeConflictMealPlanResponse(Guid Id, DateOnly WeekStartDate);

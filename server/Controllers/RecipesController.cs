@@ -80,7 +80,16 @@ namespace PantryPlan.Api.Controllers
             }
             catch (DbUpdateException)
             {
-                return Conflict(new { error = "This recipe is used in a meal plan and cannot be deleted." });
+                var referencingMealPlans = await recipeService.GetMealPlansReferencingRecipeAsync(userId, id);
+
+                return Problem(
+                    statusCode: StatusCodes.Status409Conflict,
+                    title: "Recipe is in use",
+                    detail: "This recipe is used in one or more meal plans and cannot be deleted.",
+                    extensions: new Dictionary<string, object?>
+                    {
+                        ["mealPlans"] = referencingMealPlans
+                    });
             }
         }
 

@@ -152,6 +152,17 @@ namespace PantryPlan.Api.Services.Recipes
             return true;
         }
 
+        public async Task<List<RecipeConflictMealPlanResponse>> GetMealPlansReferencingRecipeAsync(string ownerId, Guid recipeId)
+        {
+            return await db.MealPlanEntries
+                .Where(e => e.RecipeId == recipeId && e.MealPlan.OwnerId == ownerId)
+                .Select(e => e.MealPlan)
+                .Distinct()
+                .OrderBy(mp => mp.WeekStartDate)
+                .Select(mp => new RecipeConflictMealPlanResponse(mp.Id, mp.WeekStartDate))
+                .ToListAsync();
+        }
+
         private static RecipeResponse MapToResponse(Recipe recipe)
         {
             return new RecipeResponse(

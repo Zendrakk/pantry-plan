@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PantryPlan.Api.Domain;
+using PantryPlan.Api.Models.MealPlans;
 using PantryPlan.Api.Models.Recipes;
+using PantryPlan.Api.Services.MealPlans;
 using PantryPlan.Api.Services.Recipes;
 
 namespace PantryPlan.Api.Tests.Services
@@ -158,6 +160,50 @@ namespace PantryPlan.Api.Tests.Services
             Assert.Equal("Apple Pie", result[0].Title);
             Assert.Equal("Mango Salsa", result[1].Title);
             Assert.Equal("Zucchini Bread", result[2].Title);
+        }
+
+        [Fact]
+        public async Task GetMealPlansReferencingRecipeAsync_ReturnsDistinctMealPlansSortedByDate()
+        {
+            await using var db = TestHelpers.CreateDbContext();
+            var recipeService = new RecipeService(db);
+            var mealPlanService = new MealPlanService(db);
+
+            var recipe = await recipeService.CreateRecipeAsync("user-1", new CreateRecipeRequest(
+                "Chili", "Instructions", 4, [new IngredientLineRequest("Beans", 2, Unit.Cup)]));
+
+            var laterMealPlan = await mealPlanService.CreateMealPlanAsync("user-1", new CreateMealPlanRequest(new DateOnly(2026, 8, 3)));
+            var earlierMealPlan = await mealPlanService.CreateMealPlanAsync("user-1", new CreateMealPlanRequest(new DateOnly(2026, 7, 20)));
+
+            // Reference the same recipe twice within earlierMealPlan (Monday AND
+            // Thursday), plus once in laterMealPlan - the earlier plan should
+            // only appear ONCE in the result, not twice.
+            await mealPlanService.AddEntryAsync("user-1", earlierMealPlan.Id,
+                new AddMealPlanEntryRequest(recipe.Id, new DateOnly(2026, 7, 20), MealType.Dinner, false));
+            await mealPlanService.AddEntryAsync("user-1", earlierMealPlan.Id,
+                new AddMealPlanEntryRequest(recipe.Id, new DateOnly(2026, 7, 23), MealType.Dinner, true));
+            await mealPlanService.AddEntryAsync("user-1", laterMealPlan.Id,
+                new AddMealPlanEntryRequest(recipe.Id, new DateOnly(2026, 8, 3), MealType.Dinner, false));
+
+            var result = await recipeService.GetMealPlansReferencingRecipeAsync("user-1", recipe.Id);
+
+            Assert.Equal(2, result.Count);
+            Assert.Equal(earlierMealPlan.Id, result[0].Id);
+            Assert.Equal(laterMealPlan.Id, result[1].Id);
+        }
+
+        [Fact]
+        public async Task GetMealPlansReferencingRecipeAsync_WhenRecipeIsNotUsedAnywhere_ReturnsEmptyList()
+        {
+            await using var db = TestHelpers.CreateDbContext();
+            var recipeService = new RecipeService(db);
+
+            var recipe = await recipeService.CreateRecipeAsync("user-1", new CreateRecipeRequest(
+                "Chili", "Instructions", 4, [new IngredientLineRequest("Beans", 2, Unit.Cup)]));
+
+            var result = await recipeService.GetMealPlansReferencingRecipeAsync("user-1", recipe.Id);
+
+            Assert.Empty(result);
         }
     }
 }
