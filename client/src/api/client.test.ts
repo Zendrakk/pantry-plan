@@ -1,4 +1,4 @@
-import { apiRequest, ApiError } from './client'
+import { apiRequest, ApiError, extractConflictingMealPlans } from './client'
 
 describe('apiRequest', function () {
 
@@ -72,6 +72,45 @@ describe('apiRequest', function () {
         expect(error.body).toEqual({ error: 'Not found' })
       }
     }
+  })
+
+})
+
+describe('extractConflictingMealPlans', function () {
+
+  test('returns the meal plans array when present and well-formed', function () {
+    const error = new ApiError(409, {
+      title: 'Recipe is in use',
+      mealPlans: [{ id: 'abc-123', weekStartDate: '2026-07-20' }],
+    })
+
+    const result = extractConflictingMealPlans(error)
+
+    expect(result).toEqual([{ id: 'abc-123', weekStartDate: '2026-07-20' }])
+  })
+
+  test('returns an empty array when the body has no mealPlans property', function () {
+    const error = new ApiError(409, { title: 'Some other conflict' })
+
+    const result = extractConflictingMealPlans(error)
+
+    expect(result).toEqual([])
+  })
+
+  test('returns an empty array when the body is null', function () {
+    const error = new ApiError(500, null)
+
+    const result = extractConflictingMealPlans(error)
+
+    expect(result).toEqual([])
+  })
+
+  test('returns an empty array when mealPlans is not actually an array', function () {
+    const error = new ApiError(409, { mealPlans: 'not an array' })
+
+    const result = extractConflictingMealPlans(error)
+
+    expect(result).toEqual([])
   })
 
 })
