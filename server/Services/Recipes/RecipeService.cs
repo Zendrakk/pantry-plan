@@ -172,9 +172,16 @@ namespace PantryPlan.Api.Services.Recipes
                 throw new ArgumentException("Title cannot be longer than 200 characters.");
             }
 
-            if (instructions.Trim().Length < 10)
+            var trimmedInstructions = instructions.Trim();
+
+            if (trimmedInstructions.Length < 10)
             {
                 throw new ArgumentException("Instructions must be at least 10 characters long.");
+            }
+
+            if (trimmedInstructions.Length > 5000)
+            {
+                throw new ArgumentException("Instructions cannot be longer than 5000 characters.");
             }
 
             if (servingSize < 1)
@@ -189,6 +196,18 @@ namespace PantryPlan.Api.Services.Recipes
 
             foreach (var ingredient in ingredients)
             {
+                var trimmedIngredientName = ingredient.IngredientName.Trim();
+
+                if (trimmedIngredientName.Length < 2)
+                {
+                    throw new ArgumentException("Ingredient name must be at least 2 characters long.");
+                }
+
+                if (trimmedIngredientName.Length > 100)
+                {
+                    throw new ArgumentException("Ingredient name cannot be longer than 100 characters.");
+                }
+
                 if (ingredient.Quantity <= 0)
                 {
                     throw new ArgumentException("Ingredient quantity must be greater than 0.");

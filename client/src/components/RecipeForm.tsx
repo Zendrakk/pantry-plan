@@ -134,6 +134,8 @@ function RecipeForm(props: RecipeFormProps) {
           value={title}
           onChange={handleTitleChange}
           required
+          minLength={3}
+          maxLength={200}
           className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
@@ -162,6 +164,8 @@ function RecipeForm(props: RecipeFormProps) {
           value={instructions}
           onChange={handleInstructionsChange}
           required
+          minLength={10}
+          maxLength={5000}
           rows={4}
           className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
@@ -181,13 +185,15 @@ function RecipeForm(props: RecipeFormProps) {
                   handleIngredientFieldChange(index, 'ingredientName', event.target.value)
                 }}
                 required
+                minLength={2}
+                maxLength={100}
                 className="flex-1 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
 
               <input
                 type="number"
                 placeholder="Qty"
-                min="0"
+                min="0.01"
                 step="0.01"
                 value={ingredient.quantity}
                 onChange={function (event) {

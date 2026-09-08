@@ -97,6 +97,18 @@ namespace PantryPlan.Api.Tests.Services
         }
 
         [Fact]
+        public async Task CreateRecipeAsync_WithInstructionsLongerThan5000Characters_ThrowsArgumentException()
+        {
+            await using var db = TestHelpers.CreateDbContext();
+            var service = new RecipeService(db);
+            var request = new CreateRecipeRequest(
+                "Pancakes", new string('A', 5001), 4,
+                [new IngredientLineRequest("Flour", 2, Unit.Cup)]);
+
+            await Assert.ThrowsAsync<ArgumentException>(() => service.CreateRecipeAsync("user-1", request));
+        }
+
+        [Fact]
         public async Task CreateRecipeAsync_WithServingSizeOfZero_ThrowsArgumentException()
         {
             await using var db = TestHelpers.CreateDbContext();
@@ -154,6 +166,42 @@ namespace PantryPlan.Api.Tests.Services
             var request = new CreateRecipeRequest(
                 "Pancakes", "A valid set of instructions.", 4,
                 [new IngredientLineRequest("Flour", -1, Unit.Cup)]);
+
+            await Assert.ThrowsAsync<ArgumentException>(() => service.CreateRecipeAsync("user-1", request));
+        }
+
+        [Fact]
+        public async Task CreateRecipeAsync_WithIngredientNameShorterThanTwoCharacters_ThrowsArgumentException()
+        {
+            await using var db = TestHelpers.CreateDbContext();
+            var service = new RecipeService(db);
+            var request = new CreateRecipeRequest(
+                "Pancakes", "A valid set of instructions.", 4,
+                [new IngredientLineRequest("a", 2, Unit.Cup)]);
+
+            await Assert.ThrowsAsync<ArgumentException>(() => service.CreateRecipeAsync("user-1", request));
+        }
+
+        [Fact]
+        public async Task CreateRecipeAsync_WithIngredientNameLongerThan100Characters_ThrowsArgumentException()
+        {
+            await using var db = TestHelpers.CreateDbContext();
+            var service = new RecipeService(db);
+            var request = new CreateRecipeRequest(
+                "Pancakes", "A valid set of instructions.", 4,
+                [new IngredientLineRequest(new string('A', 101), 2, Unit.Cup)]);
+
+            await Assert.ThrowsAsync<ArgumentException>(() => service.CreateRecipeAsync("user-1", request));
+        }
+
+        [Fact]
+        public async Task CreateRecipeAsync_WithIngredientNameThatIsOnlyWhitespacePaddingAroundOneCharacter_ThrowsArgumentException()
+        {
+            await using var db = TestHelpers.CreateDbContext();
+            var service = new RecipeService(db);
+            var request = new CreateRecipeRequest(
+                "Pancakes", "A valid set of instructions.", 4,
+                [new IngredientLineRequest("  a  ", 2, Unit.Cup)]);
 
             await Assert.ThrowsAsync<ArgumentException>(() => service.CreateRecipeAsync("user-1", request));
         }
