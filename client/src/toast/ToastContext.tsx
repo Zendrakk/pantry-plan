@@ -31,8 +31,9 @@ export function ToastProvider(props: ToastProviderProps) {
       type: type,
     }
 
-    const updatedToasts = toasts.concat([newToast])
-    setToasts(updatedToasts)
+    setToasts(function (currentToasts) {
+      return currentToasts.concat([newToast])
+    })
 
     // Automatically remove this toast after 4 seconds.
     setTimeout(function () {
@@ -41,10 +42,11 @@ export function ToastProvider(props: ToastProviderProps) {
   }
 
   function dismissToast(id: string) {
-    const remainingToasts = toasts.filter(function (toast) {
-      return toast.id !== id
+    setToasts(function (currentToasts) {
+      return currentToasts.filter(function (toast) {
+        return toast.id !== id
+      })
     })
-    setToasts(remainingToasts)
   }
 
   const contextValue: ToastContextValue = {
