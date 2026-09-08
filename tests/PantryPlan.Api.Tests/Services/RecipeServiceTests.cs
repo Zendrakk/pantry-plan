@@ -46,6 +46,69 @@ namespace PantryPlan.Api.Tests.Services
         }
 
         [Fact]
+        public async Task CreateRecipeAsync_WithTitleShorterThanThreeCharacters_ThrowsArgumentException()
+        {
+            await using var db = TestHelpers.CreateDbContext();
+            var service = new RecipeService(db);
+            var request = new CreateRecipeRequest(
+                "AB", "A valid set of instructions.", 4,
+                [new IngredientLineRequest("Flour", 2, Unit.Cup)]);
+
+            await Assert.ThrowsAsync<ArgumentException>(() => service.CreateRecipeAsync("user-1", request));
+        }
+
+        [Fact]
+        public async Task CreateRecipeAsync_WithTitleLongerThan200Characters_ThrowsArgumentException()
+        {
+            await using var db = TestHelpers.CreateDbContext();
+            var service = new RecipeService(db);
+            var request = new CreateRecipeRequest(
+                new string('A', 201), "A valid set of instructions.", 4,
+                [new IngredientLineRequest("Flour", 2, Unit.Cup)]);
+
+            await Assert.ThrowsAsync<ArgumentException>(() => service.CreateRecipeAsync("user-1", request));
+        }
+
+        [Fact]
+        public async Task CreateRecipeAsync_WithTitleThatIsOnlyWhitespacePaddingAroundShortText_ThrowsArgumentException()
+        {
+            // A title like "  AB  " should be trimmed down to "AB" (2 characters)
+            // before the length check runs, and correctly rejected - not padded
+            // out to look like it meets the minimum.
+            await using var db = TestHelpers.CreateDbContext();
+            var service = new RecipeService(db);
+            var request = new CreateRecipeRequest(
+                "  AB  ", "A valid set of instructions.", 4,
+                [new IngredientLineRequest("Flour", 2, Unit.Cup)]);
+
+            await Assert.ThrowsAsync<ArgumentException>(() => service.CreateRecipeAsync("user-1", request));
+        }
+
+        [Fact]
+        public async Task CreateRecipeAsync_WithInstructionsShorterThanTenCharacters_ThrowsArgumentException()
+        {
+            await using var db = TestHelpers.CreateDbContext();
+            var service = new RecipeService(db);
+            var request = new CreateRecipeRequest(
+                "Pancakes", "Too short", 4,
+                [new IngredientLineRequest("Flour", 2, Unit.Cup)]);
+
+            await Assert.ThrowsAsync<ArgumentException>(() => service.CreateRecipeAsync("user-1", request));
+        }
+
+        [Fact]
+        public async Task CreateRecipeAsync_WithServingSizeOfZero_ThrowsArgumentException()
+        {
+            await using var db = TestHelpers.CreateDbContext();
+            var service = new RecipeService(db);
+            var request = new CreateRecipeRequest(
+                "Pancakes", "A valid set of instructions.", 0,
+                [new IngredientLineRequest("Flour", 2, Unit.Cup)]);
+
+            await Assert.ThrowsAsync<ArgumentException>(() => service.CreateRecipeAsync("user-1", request));
+        }
+
+        [Fact]
         public async Task CreateRecipeAsync_WithNoIngredients_ThrowsArgumentException()
         {
             await using var db = TestHelpers.CreateDbContext();
@@ -69,6 +132,30 @@ namespace PantryPlan.Api.Tests.Services
 
             var ingredientCount = await db.Ingredients.CountAsync();
             Assert.Equal(1, ingredientCount);
+        }
+
+        [Fact]
+        public async Task CreateRecipeAsync_WithIngredientQuantityOfZero_ThrowsArgumentException()
+        {
+            await using var db = TestHelpers.CreateDbContext();
+            var service = new RecipeService(db);
+            var request = new CreateRecipeRequest(
+                "Pancakes", "A valid set of instructions.", 4,
+                [new IngredientLineRequest("Flour", 0, Unit.Cup)]);
+
+            await Assert.ThrowsAsync<ArgumentException>(() => service.CreateRecipeAsync("user-1", request));
+        }
+
+        [Fact]
+        public async Task CreateRecipeAsync_WithNegativeIngredientQuantity_ThrowsArgumentException()
+        {
+            await using var db = TestHelpers.CreateDbContext();
+            var service = new RecipeService(db);
+            var request = new CreateRecipeRequest(
+                "Pancakes", "A valid set of instructions.", 4,
+                [new IngredientLineRequest("Flour", -1, Unit.Cup)]);
+
+            await Assert.ThrowsAsync<ArgumentException>(() => service.CreateRecipeAsync("user-1", request));
         }
 
         [Fact]

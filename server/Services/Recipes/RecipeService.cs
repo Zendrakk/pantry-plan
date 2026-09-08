@@ -9,15 +9,7 @@ namespace PantryPlan.Api.Services.Recipes
     {
         public async Task<RecipeResponse> CreateRecipeAsync(string ownerId, CreateRecipeRequest request)
         {
-            if (string.IsNullOrWhiteSpace(request.Title))
-            {
-                throw new ArgumentException("Title is required.");
-            }
-
-            if (request.Ingredients.Count == 0)
-            {
-                throw new ArgumentException("At least one ingredient is required.");
-            }
+            ValidateRecipeRequest(request.Title, request.Instructions, request.ServingSize, request.Ingredients);
 
             var recipe = new Recipe
             {
@@ -75,15 +67,7 @@ namespace PantryPlan.Api.Services.Recipes
 
         public async Task<RecipeResponse?> UpdateRecipeAsync(string ownerId, Guid recipeId, UpdateRecipeRequest request)
         {
-            if (string.IsNullOrWhiteSpace(request.Title))
-            {
-                throw new ArgumentException("Title is required.");
-            }
-
-            if (request.Ingredients.Count == 0)
-            {
-                throw new ArgumentException("At least one ingredient is required.");
-            }
+            ValidateRecipeRequest(request.Title, request.Instructions, request.ServingSize, request.Ingredients);
 
             var recipe = await db.Recipes
                 .FirstOrDefaultAsync(r => r.Id == recipeId && r.OwnerId == ownerId);
@@ -172,6 +156,44 @@ namespace PantryPlan.Api.Services.Recipes
                 recipe.ServingSize,
                 recipe.Ingredients.Select(ri => new IngredientLineResponse(ri.Ingredient.Name, ri.Quantity, ri.Unit)).ToList()
             );
+        }
+
+        private static void ValidateRecipeRequest(string title, string instructions, int servingSize, List<IngredientLineRequest> ingredients)
+        {
+            var trimmedTitle = title.Trim();
+
+            if (trimmedTitle.Length < 3)
+            {
+                throw new ArgumentException("Title must be at least 3 characters long.");
+            }
+
+            if (trimmedTitle.Length > 200)
+            {
+                throw new ArgumentException("Title cannot be longer than 200 characters.");
+            }
+
+            if (instructions.Trim().Length < 10)
+            {
+                throw new ArgumentException("Instructions must be at least 10 characters long.");
+            }
+
+            if (servingSize < 1)
+            {
+                throw new ArgumentException("Serving size must be at least 1.");
+            }
+
+            if (ingredients.Count == 0)
+            {
+                throw new ArgumentException("At least one ingredient is required.");
+            }
+
+            foreach (var ingredient in ingredients)
+            {
+                if (ingredient.Quantity <= 0)
+                {
+                    throw new ArgumentException("Ingredient quantity must be greater than 0.");
+                }
+            }
         }
     }
 }
