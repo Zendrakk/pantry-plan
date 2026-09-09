@@ -132,7 +132,7 @@ function RecipeDetailPage() {
           </ul>
 
           <h2 className="text-lg font-semibold text-gray-900 mb-2">Instructions</h2>
-          <p className="text-gray-700 whitespace-pre-wrap">{recipe.instructions}</p>
+          <p className="text-gray-700 whitespace-pre-wrap break-words">{recipe.instructions}</p>
         </Card>
       </div>
     </div>
