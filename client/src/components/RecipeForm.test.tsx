@@ -95,6 +95,10 @@ describe('RecipeForm', function () {
     await user.type(screen.getByLabelText('Instructions'), 'Mix and cook')
     await user.type(screen.getByPlaceholderText('Ingredient name'), 'Flour')
 
+    const quantityInput = screen.getByPlaceholderText('Qty')
+    await user.clear(quantityInput)
+    await user.type(quantityInput, '2')
+
     await user.click(screen.getByText('Create Recipe'))
 
     expect(await screen.findByText('Something went wrong. Please check your entries and try again.')).toBeInTheDocument()
