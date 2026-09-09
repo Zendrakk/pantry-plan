@@ -4,6 +4,7 @@ import { useAuth } from '../auth/useAuth'
 import { getMealPlan, addMealPlanEntry, removeMealPlanEntry, deleteMealPlan } from '../api/mealPlans'
 import { listRecipes } from '../api/recipes'
 import { useToast } from '../toast/useToast'
+import { useConfirm } from '../confirm/useConfirm'
 import type { MealPlan, MealType } from '../types/mealPlan'
 import type { RecipeSummary } from '../types/recipe'
 import usePageTitle from '../hooks/usePageTitle'
@@ -19,6 +20,7 @@ function MealPlanDetailPage() {
   const params = useParams()
   const navigate = useNavigate()
   const toast = useToast()
+  const confirmDialog = useConfirm()
   const mealPlanId = params.mealPlanId
 
   const [mealPlan, setMealPlan] = useState<MealPlan | null>(null)
@@ -113,7 +115,7 @@ function MealPlanDetailPage() {
       return
     }
 
-    const confirmed = window.confirm('Are you sure you want to delete this meal plan? This cannot be undone.')
+    const confirmed = await confirmDialog.confirm('Are you sure you want to delete this meal plan? This cannot be undone.')
     if (!confirmed) {
       return
     }

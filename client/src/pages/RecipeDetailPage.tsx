@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom'
 import { deleteRecipe } from '../api/recipes'
 import { ApiError, extractConflictingMealPlans } from '../api/client'
 import { useToast } from '../toast/useToast'
+import { useConfirm } from '../confirm/useConfirm'
 import type { Recipe, ConflictingMealPlan } from '../types/recipe'
 import usePageTitle from '../hooks/usePageTitle'
 import Button from '../components/Button'
@@ -18,6 +19,7 @@ function RecipeDetailPage() {
   const navigate = useNavigate()
   const params = useParams()
   const toast = useToast()
+  const confirmDialog = useConfirm()
   const recipeId = params.recipeId
 
   const [recipe, setRecipe] = useState<Recipe | null>(null)
@@ -63,7 +65,7 @@ function RecipeDetailPage() {
       return
     }
 
-    const confirmed = window.confirm('Are you sure you want to delete this recipe?')
+    const confirmed = await confirmDialog.confirm('Are you sure you want to delete this recipe?')
     if (!confirmed) {
       return
     }

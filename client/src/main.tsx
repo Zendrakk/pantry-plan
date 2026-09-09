@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom'
 import { AuthProvider } from './auth/AuthContext'
 import { ToastProvider } from './toast/ToastContext'
 import ToastContainer from './toast/ToastContainer'
+import { ConfirmProvider } from './confirm/ConfirmContext'
 import './index.css'
 import App from './App.tsx'
 
@@ -14,8 +15,10 @@ createRoot(rootElement!).render(
     <BrowserRouter>
       <AuthProvider>
         <ToastProvider>
-          <App />
-          <ToastContainer />
+          <ConfirmProvider>
+            <App />
+            <ToastContainer />
+          </ConfirmProvider>
         </ToastProvider>
       </AuthProvider>
     </BrowserRouter>
