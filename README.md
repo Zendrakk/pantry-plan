@@ -1,4 +1,4 @@
-# 🥘 Pantry & Plan
+# <img src="docs/logo.svg" width="32" height="32" alt="Pantry & Plan logo" /> Pantry & Plan
 
 [![CI](https://github.com/Zendrakk/pantry-plan/actions/workflows/ci.yml/badge.svg)](https://github.com/Zendrakk/pantry-plan/actions/workflows/ci.yml)
 ![.NET](https://img.shields.io/badge/.NET-10-512BD4?logo=dotnet&logoColor=white)
