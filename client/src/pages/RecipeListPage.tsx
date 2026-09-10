@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../auth/useAuth'
 import { listRecipes } from '../api/recipes'
+import { pluralize } from '../utils/pluralize'
 import type { RecipeSummary } from '../types/recipe'
 import usePageTitle from '../hooks/usePageTitle'
 import LinkButton from '../components/LinkButton'
@@ -65,7 +66,7 @@ function RecipeListPage() {
               <CardLink to={'/recipes/' + recipe.id}>
                 <p className="font-semibold text-gray-900">{recipe.title}</p>
                 <p className="text-sm text-gray-600">
-                  Serves {recipe.servingSize} &middot; {recipe.ingredientCount} ingredients
+                  Serves {recipe.servingSize} &middot; {recipe.ingredientCount} {pluralize(recipe.ingredientCount, 'ingredient', 'ingredients')}
                 </p>
               </CardLink>
             </li>

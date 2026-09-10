@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../auth/useAuth'
 import { listMealPlans } from '../api/mealPlans'
+import { pluralize } from '../utils/pluralize'
 import type { MealPlanSummary } from '../types/mealPlan'
 import usePageTitle from '../hooks/usePageTitle'
 import LinkButton from '../components/LinkButton'
@@ -61,7 +62,7 @@ function MealPlanListPage() {
             <li key={mealPlan.id}>
               <CardLink to={'/meal-plans/' + mealPlan.id}>
                 <p className="font-semibold text-gray-900">Week of {mealPlan.weekStartDate}</p>
-                <p className="text-sm text-gray-600">{mealPlan.entryCount} meals planned</p>
+                <p className="text-sm text-gray-600">{mealPlan.entryCount} {pluralize(mealPlan.entryCount, 'meal planned', 'meals planned')}</p>
               </CardLink>
             </li>
           )
