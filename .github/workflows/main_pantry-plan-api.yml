@@ -27,7 +27,7 @@ jobs:
         run: dotnet publish server/PantryPlan.Api.csproj -c Release -o ${{env.DOTNET_ROOT}}/myapp
 
       - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: .net-app
           path: ${{env.DOTNET_ROOT}}/myapp
@@ -41,12 +41,12 @@ jobs:
 
     steps:
       - name: Download artifact from build job
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: .net-app
 
       - name: Login to Azure
-        uses: azure/login@v2
+        uses: azure/login@v3
         with:
           client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_EAA449CFA3584CECABFE945C2761F8B3 }}
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_D49AEC87B5AC42339382FCCE3FA3DDC2 }}
