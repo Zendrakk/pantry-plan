@@ -26,6 +26,9 @@ jobs:
       - name: dotnet publish
         run: dotnet publish server/PantryPlan.Api.csproj -c Release -o ${{env.DOTNET_ROOT}}/myapp
 
+      - name: List published files (diagnostic)
+        run: ls -la ${{env.DOTNET_ROOT}}/myapp
+
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v6
         with:
