@@ -130,7 +130,34 @@ namespace PantryPlan.Api.Services.Recipes
                 return false;
             }
 
+            // Capture which ingredients this recipe used, before deleting it,
+            // so we can check afterward whether any of them are now orphaned.
+            var ingredientIds = recipe.Ingredients
+                .Select(ri => ri.IngredientId)
+                .Distinct()
+                .ToList();
+
             db.Recipes.Remove(recipe);
+            await db.SaveChangesAsync();
+
+            // Now that the recipe (and its RecipeIngredient rows, via cascade)
+            // are gone, check each ingredient it used: if nothing else
+            // references it anymore, it's orphaned and safe to remove.
+            foreach (var ingredientId in ingredientIds)
+            {
+                var stillReferenced = await db.RecipeIngredients
+                    .AnyAsync(ri => ri.IngredientId == ingredientId);
+
+                if (!stillReferenced)
+                {
+                    var orphanedIngredient = await db.Ingredients.FindAsync(ingredientId);
+                    if (orphanedIngredient is not null)
+                    {
+                        db.Ingredients.Remove(orphanedIngredient);
+                    }
+                }
+            }
+
             await db.SaveChangesAsync();
 
             return true;

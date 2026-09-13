@@ -47,7 +47,7 @@ Built end-to-end as a portfolio project: ASP.NET Core Web API backend, React + T
 
 **Testing & CI/CD**
 - xUnit + EF Core InMemory provider (backend), Vitest + React Testing Library (frontend)
-- 49 backend tests, 25 frontend tests
+- 51 backend tests, 25 frontend tests
 - GitHub Actions running both suites in parallel on every push
 
 ## Architecture Highlights

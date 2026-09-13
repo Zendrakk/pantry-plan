@@ -291,6 +291,39 @@ namespace PantryPlan.Api.Tests.Services
         }
 
         [Fact]
+        public async Task DeleteRecipeAsync_WhenIngredientIsOnlyUsedByThisRecipe_DeletesTheOrphanedIngredient()
+        {
+            await using var db = TestHelpers.CreateDbContext();
+            var service = new RecipeService(db);
+
+            var recipe = await service.CreateRecipeAsync("user-1", new CreateRecipeRequest(
+                "Pancakes", "Mix and cook thoroughly.", 4, [new IngredientLineRequest("Flour", 2, Unit.Cup)]));
+
+            await service.DeleteRecipeAsync("user-1", recipe.Id);
+
+            var ingredientStillExists = await db.Ingredients.AnyAsync(i => i.Name == "Flour");
+            Assert.False(ingredientStillExists);
+        }
+
+        [Fact]
+        public async Task DeleteRecipeAsync_WhenIngredientIsStillUsedByAnotherRecipe_KeepsTheIngredient()
+        {
+            await using var db = TestHelpers.CreateDbContext();
+            var service = new RecipeService(db);
+
+            var recipeOne = await service.CreateRecipeAsync("user-1", new CreateRecipeRequest(
+                "Pancakes", "Mix and cook thoroughly.", 4, [new IngredientLineRequest("Flour", 2, Unit.Cup)]));
+
+            await service.CreateRecipeAsync("user-1", new CreateRecipeRequest(
+                "Bread", "Knead and bake thoroughly.", 4, [new IngredientLineRequest("Flour", 3, Unit.Cup)]));
+
+            await service.DeleteRecipeAsync("user-1", recipeOne.Id);
+
+            var ingredientStillExists = await db.Ingredients.AnyAsync(i => i.Name == "Flour");
+            Assert.True(ingredientStillExists);
+        }
+
+        [Fact]
         public async Task ListRecipesAsync_ReturnsRecipesSortedAlphabeticallyByTitle()
         {
             await using var db = TestHelpers.CreateDbContext();
