@@ -7,7 +7,8 @@ namespace PantryPlan.Api.Services.Auth;
 public class AuthService(
     UserManager<User> userManager,
     JwtTokenService jwtTokenService,
-    RefreshTokenService refreshTokenService) : IAuthService
+    RefreshTokenService refreshTokenService,
+    ILogger<AuthService> logger) : IAuthService
 {
     public async Task<RegisterResult> RegisterAsync(string email, string password)
     {
@@ -22,9 +23,11 @@ public class AuthService(
         if (!result.Succeeded)
         {
             var errors = result.Errors.Select(e => e.Description);
+            logger.LogInformation("Registration failed for email {Email}: {Errors}", email, string.Join("; ", errors));
             return new RegisterResult(Succeeded: false, Errors: errors);
         }
 
+        logger.LogInformation("New user registered: {UserId}", user.Id);
         return new RegisterResult(Succeeded: true, UserId: user.Id, Email: user.Email!);
     }
 
@@ -34,6 +37,7 @@ public class AuthService(
 
         if (user is null)
         {
+            logger.LogWarning("Login attempt for unknown email {Email}", email);
             return new LoginResult(Succeeded: false);
         }
 
@@ -44,6 +48,7 @@ public class AuthService(
 
         if (isLockedOut)
         {
+            logger.LogWarning("Login attempt for locked-out user {UserId}", user.Id);
             return new LoginResult(Succeeded: false);
         }
 
@@ -54,6 +59,7 @@ public class AuthService(
             // Record the failed attempt. Identity tracks this count itself and will automatically lock the
             // account once the configured MaxFailedAccessAttempts threshold (set in Program.cs) is reached.
             await userManager.AccessFailedAsync(user);
+            logger.LogWarning("Failed login attempt for user {UserId}", user.Id);
             return new LoginResult(Succeeded: false);
         }
 
@@ -62,6 +68,8 @@ public class AuthService(
 
         var accessToken = jwtTokenService.GenerateAccessToken(user);
         var (rawRefreshToken, _) = await refreshTokenService.GenerateAsync(user.Id);
+
+        logger.LogInformation("User {UserId} logged in successfully", user.Id);
 
         return new LoginResult(
             Succeeded: true,
@@ -87,6 +95,7 @@ public class AuthService(
             {
                 // Token was valid once but already rotated - someone is replaying
                 // an old token. Nuke every active session for this user as a precaution.
+                logger.LogError("Refresh token reuse detected for user {UserId}. Revoking all sessions.", reusedUserId);
                 await refreshTokenService.RevokeAllForUserAsync(reusedUserId);
             }
 
