@@ -24,11 +24,11 @@ namespace PantryPlan.Api.Services.Recipes
                 var normalizedName = line.IngredientName.Trim();
 
                 var ingredient = await db.Ingredients
-                    .FirstOrDefaultAsync(i => i.Name.ToLower() == normalizedName.ToLower());
+                    .FirstOrDefaultAsync(i => i.OwnerId == ownerId && i.Name.ToLower() == normalizedName.ToLower());
 
                 if (ingredient is null)
                 {
-                    ingredient = new Ingredient { Name = normalizedName };
+                    ingredient = new Ingredient { Name = normalizedName, OwnerId = ownerId };
                     db.Ingredients.Add(ingredient);
                 }
 
@@ -93,11 +93,11 @@ namespace PantryPlan.Api.Services.Recipes
                 var normalizedName = line.IngredientName.Trim();
 
                 var ingredient = await db.Ingredients
-                    .FirstOrDefaultAsync(i => i.Name.ToLower() == normalizedName.ToLower());
+                    .FirstOrDefaultAsync(i => i.OwnerId == ownerId && i.Name.ToLower() == normalizedName.ToLower());
 
                 if (ingredient is null)
                 {
-                    ingredient = new Ingredient { Name = normalizedName };
+                    ingredient = new Ingredient { Name = normalizedName, OwnerId = ownerId };
                     db.Ingredients.Add(ingredient);
                 }
 

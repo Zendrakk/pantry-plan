@@ -47,7 +47,7 @@ Built end-to-end as a portfolio project: ASP.NET Core Web API backend, React + T
 
 **Testing & CI/CD**
 - xUnit + EF Core InMemory provider (backend), Vitest + React Testing Library (frontend)
-- 48 backend tests, 25 frontend tests
+- 49 backend tests, 25 frontend tests
 - GitHub Actions running both suites in parallel on every push
 
 ## Architecture Highlights
@@ -58,6 +58,7 @@ A few deliberate decisions worth noting:
 - **`ProblemDetails` extensions for structured errors.** When a recipe deletion is blocked because it's referenced by a meal plan, the API returns a standard RFC 7807 `ProblemDetails` response with the list of conflicting meal plans attached as an extension — not a custom, one-off error shape.
 - **Sorting and validation live in the service layer, not the client.** Meal plan entries are sorted chronologically (then by meal type) and recipes are sorted alphabetically entirely on the backend, so every consumer of the API gets correct, consistent ordering for free.
 - **The access token lives in memory only.** It's never written to `localStorage` or `sessionStorage`, reducing exposure to token theft via XSS. Session continuity across page reloads is handled by silently refreshing via the HttpOnly cookie on app load.
+- **Ingredients are scoped per-user, not shared globally.** Two users can each have their own "Flour" ingredient row — this prevents a user from ever seeing free-text content (like an ingredient name) that another user created, closing off a potential vector for inappropriate or abusive content to become visible across accounts.
 
 ## Known Limitations & Possible Future Work
 

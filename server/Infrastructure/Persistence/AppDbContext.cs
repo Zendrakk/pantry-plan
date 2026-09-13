@@ -71,6 +71,13 @@ namespace PantryPlan.Api.Infrastructure.Persistence
                 .WithMany()
                 .HasForeignKey(mp => mp.OwnerId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            // Ingredient -> User (owner): restrict
+            builder.Entity<Ingredient>()
+                .HasOne(i => i.Owner)
+                .WithMany()
+                .HasForeignKey(i => i.OwnerId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

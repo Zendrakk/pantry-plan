@@ -207,6 +207,22 @@ namespace PantryPlan.Api.Tests.Services
         }
 
         [Fact]
+        public async Task CreateRecipeAsync_WithSameIngredientNameAsAnotherUser_CreatesSeparateIngredientRows()
+        {
+            await using var db = TestHelpers.CreateDbContext();
+            var service = new RecipeService(db);
+
+            await service.CreateRecipeAsync("user-1", new CreateRecipeRequest(
+                "Recipe One", "Instructions go here.", 2, [new IngredientLineRequest("Flour", 1, Unit.Cup)]));
+
+            await service.CreateRecipeAsync("user-2", new CreateRecipeRequest(
+                "Recipe Two", "Instructions go here.", 2, [new IngredientLineRequest("Flour", 1, Unit.Cup)]));
+
+            var ingredientCount = await db.Ingredients.CountAsync();
+            Assert.Equal(2, ingredientCount);
+        }
+
+        [Fact]
         public async Task GetRecipeAsync_WhenOwnedByCaller_ReturnsRecipe()
         {
             await using var db = TestHelpers.CreateDbContext();
