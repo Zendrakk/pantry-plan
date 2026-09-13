@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging.Abstractions;
 using PantryPlan.Api.Infrastructure.Auth;
 using PantryPlan.Api.Services.Auth;
 
@@ -26,8 +27,9 @@ namespace PantryPlan.Api.Tests.Services
             var userManager = TestHelpers.CreateUserManager(db);
             var jwtTokenService = CreateJwtTokenService();
             var refreshTokenService = new RefreshTokenService(db);
+            var logger = NullLogger<AuthService>.Instance;
 
-            return (new AuthService(userManager, jwtTokenService, refreshTokenService), refreshTokenService);
+            return (new AuthService(userManager, jwtTokenService, refreshTokenService, logger), refreshTokenService);
         }
 
         [Fact]
