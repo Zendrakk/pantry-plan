@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using PantryPlan.Api.Domain;
+using PantryPlan.Api.Infrastructure.Persistence;
 using PantryPlan.Api.Models.MealPlans;
 using PantryPlan.Api.Models.Recipes;
 using PantryPlan.Api.Services.MealPlans;
@@ -293,33 +295,42 @@ namespace PantryPlan.Api.Tests.Services
         [Fact]
         public async Task DeleteRecipeAsync_WhenIngredientIsOnlyUsedByThisRecipe_DeletesTheOrphanedIngredient()
         {
-            await using var db = TestHelpers.CreateDbContext();
-            var service = new RecipeService(db);
+            var databaseName = Guid.NewGuid().ToString();
 
-            var recipe = await service.CreateRecipeAsync("user-1", new CreateRecipeRequest(
+            await using var createDb = TestHelpers.CreateDbContext(databaseName);
+            var createService = new RecipeService(createDb);
+            var recipe = await createService.CreateRecipeAsync("user-1", new CreateRecipeRequest(
                 "Pancakes", "Mix and cook thoroughly.", 4, [new IngredientLineRequest("Flour", 2, Unit.Cup)]));
 
-            await service.DeleteRecipeAsync("user-1", recipe.Id);
+            await using var deleteDb = TestHelpers.CreateDbContext(databaseName);
+            var deleteService = new RecipeService(deleteDb);
+            await deleteService.DeleteRecipeAsync("user-1", recipe.Id);
 
-            var ingredientStillExists = await db.Ingredients.AnyAsync(i => i.Name == "Flour");
+            await using var verifyDb = TestHelpers.CreateDbContext(databaseName);
+            var ingredientStillExists = await verifyDb.Ingredients.AnyAsync(i => i.Name == "Flour");
             Assert.False(ingredientStillExists);
         }
 
         [Fact]
         public async Task DeleteRecipeAsync_WhenIngredientIsStillUsedByAnotherRecipe_KeepsTheIngredient()
         {
-            await using var db = TestHelpers.CreateDbContext();
-            var service = new RecipeService(db);
+            var databaseName = Guid.NewGuid().ToString();
 
-            var recipeOne = await service.CreateRecipeAsync("user-1", new CreateRecipeRequest(
+            await using var createDb = TestHelpers.CreateDbContext(databaseName);
+            var createService = new RecipeService(createDb);
+
+            var recipeOne = await createService.CreateRecipeAsync("user-1", new CreateRecipeRequest(
                 "Pancakes", "Mix and cook thoroughly.", 4, [new IngredientLineRequest("Flour", 2, Unit.Cup)]));
 
-            await service.CreateRecipeAsync("user-1", new CreateRecipeRequest(
+            await createService.CreateRecipeAsync("user-1", new CreateRecipeRequest(
                 "Bread", "Knead and bake thoroughly.", 4, [new IngredientLineRequest("Flour", 3, Unit.Cup)]));
 
-            await service.DeleteRecipeAsync("user-1", recipeOne.Id);
+            await using var deleteDb = TestHelpers.CreateDbContext(databaseName);
+            var deleteService = new RecipeService(deleteDb);
+            await deleteService.DeleteRecipeAsync("user-1", recipeOne.Id);
 
-            var ingredientStillExists = await db.Ingredients.AnyAsync(i => i.Name == "Flour");
+            await using var verifyDb = TestHelpers.CreateDbContext(databaseName);
+            var ingredientStillExists = await verifyDb.Ingredients.AnyAsync(i => i.Name == "Flour");
             Assert.True(ingredientStillExists);
         }
 

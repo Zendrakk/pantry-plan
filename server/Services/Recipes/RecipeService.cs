@@ -123,6 +123,7 @@ namespace PantryPlan.Api.Services.Recipes
         public async Task<bool> DeleteRecipeAsync(string ownerId, Guid recipeId)
         {
             var recipe = await db.Recipes
+                .Include(r => r.Ingredients)
                 .FirstOrDefaultAsync(r => r.Id == recipeId && r.OwnerId == ownerId);
 
             if (recipe is null)

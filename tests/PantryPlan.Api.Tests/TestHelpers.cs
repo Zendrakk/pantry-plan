@@ -20,6 +20,15 @@ namespace PantryPlan.Api.Tests
             return new AppDbContext(options);
         }
 
+        public static AppDbContext CreateDbContext(string databaseName)
+        {
+            var options = new DbContextOptionsBuilder<AppDbContext>()
+                .UseInMemoryDatabase(databaseName)
+                .Options;
+
+            return new AppDbContext(options);
+        }
+
         // Builds a REAL UserManager backed by the in-memory db, using the same
         // password/email rules configured in Program.cs, so tests exercise
         // genuine Identity validation rather than a hand-rolled fake.
