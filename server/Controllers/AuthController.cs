@@ -78,7 +78,7 @@ public class AuthController(IAuthService authService) : ControllerBase
         {
             HttpOnly = true,
             Secure = true,
-            SameSite = SameSiteMode.Lax,
+            SameSite = SameSiteMode.None,
             Expires = DateTimeOffset.UtcNow.AddDays(30),
             Path = RefreshTokenCookiePath
         });
@@ -86,6 +86,11 @@ public class AuthController(IAuthService authService) : ControllerBase
 
     private void DeleteRefreshTokenCookie()
     {
-        Response.Cookies.Delete(RefreshTokenCookieName, new CookieOptions { Path = RefreshTokenCookiePath });
+        Response.Cookies.Delete(RefreshTokenCookieName, new CookieOptions 
+        {
+            Path = RefreshTokenCookiePath,
+            Secure = true,
+            SameSite = SameSiteMode.None
+        });
     }
 }

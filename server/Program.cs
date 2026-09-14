@@ -64,6 +64,17 @@ var jwtSigningKey = builder.Configuration["Jwt:SigningKey"]!;
 var jwtIssuer = builder.Configuration["Jwt:Issuer"]!;
 var jwtAudience = builder.Configuration["Jwt:Audience"]!;
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("https://pantry-plan-zendrakk.netlify.app")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
+});
+
 builder.Services
     .AddAuthentication(options =>
     {
@@ -98,6 +109,8 @@ builder.Services.AddScoped<IMealPlanService, MealPlanService>();
 var app = builder.Build();
 
 app.UseHttpsRedirection();
+
+app.UseCors("AllowFrontend");
 
 app.UseAuthentication();
 app.UseAuthorization();
