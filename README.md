@@ -153,6 +153,10 @@ pantry-plan/
 └── .github/workflows/    # CI pipeline
 ```
 
+## Credits
+
+The logo was designed collaboratively with Claude (Anthropic's AI coding assistant) — I described the look I wanted and iterated through several rounds of feedback until it matched my vision, similar to how the rest of this project was built.
+
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
