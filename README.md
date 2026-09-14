@@ -13,11 +13,11 @@ Built end-to-end as a portfolio project: ASP.NET Core Web API backend, React + T
 
 ## Live Demo
 
-- **App**: [pantry-plan.pages.dev](https://pantry-plan.pages.dev)
+- **App**: [pantryandplan.com](https://pantryandplan.com)
 - **API**: [pantry-plan-api-fhbbdwc5grbpczbv.centralus-01.azurewebsites.net](https://pantry-plan-api-fhbbdwc5grbpczbv.centralus-01.azurewebsites.net)
 
 Deployed across three separate providers — a deliberate choice, using the best free-tier fit for each piece rather than defaulting to one vendor:
-- **Frontend**: [Cloudflare Pages](https://pages.cloudflare.com), auto-deploying on every push to `main`
+- **Frontend**: [Cloudflare Pages](https://pages.cloudflare.com), auto-deploying on every push to `main`, served on a custom domain registered through Cloudflare
 - **Backend**: [Azure App Service](https://azure.microsoft.com/products/app-service) (free tier), via a GitHub Actions CI/CD pipeline
 - **Database**: [Neon](https://neon.tech) (serverless Postgres, free tier)
 
