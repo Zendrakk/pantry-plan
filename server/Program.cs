@@ -68,7 +68,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins("https://pantry-plan.pages.dev")
+        policy.WithOrigins("https://pantryandplan.com", "https://pantry-plan.pages.dev")
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();
