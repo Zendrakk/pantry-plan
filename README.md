@@ -73,6 +73,7 @@ A few deliberate decisions worth noting:
 - **The access token lives in memory only.** It's never written to `localStorage` or `sessionStorage`, reducing exposure to token theft via XSS. Session continuity across page reloads is handled by silently refreshing via the HttpOnly cookie on app load.
 - **Ingredients are scoped per-user, not shared globally.** Two users can each have their own "Flour" ingredient row — this prevents a user from ever seeing free-text content (like an ingredient name) that another user created, closing off a potential vector for inappropriate or abusive content to become visible across accounts.
 - **Targeted, structured logging around security-sensitive events.** Rather than logging every request, `AuthService` logs specifically at meaningful points — failed login attempts, account lockouts, successful registrations, and especially refresh token reuse detection (logged at `Error` severity, since it signals a possible token theft attempt) — using structured log parameters rather than string interpolation, so fields like user ID remain queryable in tools like Azure's Log Analytics.
+- **Defensive HTTP response headers.** HSTS (enforced in production only), `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, and a restrictive `Referrer-Policy` are applied to every response, hardening against content-sniffing attacks, clickjacking, and unnecessary URL leakage.
 
 ## Known Limitations & Possible Future Work
 

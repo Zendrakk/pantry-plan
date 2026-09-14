@@ -110,6 +110,33 @@ var app = builder.Build();
 
 app.UseHttpsRedirection();
 
+// HSTS tells browsers to always use HTTPS for this domain going forward,
+// even if a user later types "http://" by mistake. Skipped in Development
+// since it can cause confusing behavior on localhost.
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHsts();
+}
+
+// A few standard security response headers, added to every request:
+app.Use(async (context, next) =>
+{
+    // Stops browsers from "guessing" a response's content type, which has
+    // historically enabled certain content-sniffing based attacks.
+    context.Response.Headers.Append("X-Content-Type-Options", "nosniff");
+
+    // Prevents this site from being embedded in an <iframe> on another
+    // site, defending against clickjacking (an attacker overlaying our
+    // real login form invisibly inside their own malicious page).
+    context.Response.Headers.Append("X-Frame-Options", "DENY");
+
+    // Limits how much URL information leaks via the Referer header when
+    // a user navigates away from this site to a different origin.
+    context.Response.Headers.Append("Referrer-Policy", "strict-origin-when-cross-origin");
+
+    await next();
+});
+
 app.UseCors("AllowFrontend");
 
 app.UseAuthentication();
