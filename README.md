@@ -11,6 +11,18 @@ A full-stack recipe and meal-planning application. Users manage a personal recip
 
 Built end-to-end as a portfolio project: ASP.NET Core Web API backend, React + TypeScript frontend, PostgreSQL database, with a full automated test suite and CI/CD pipeline.
 
+## Live Demo
+
+- **App**: [pantry-plan.pages.dev](https://pantry-plan.pages.dev)
+- **API**: [pantry-plan-api-fhbbdwc5grbpczbv.centralus-01.azurewebsites.net](https://pantry-plan-api-fhbbdwc5grbpczbv.centralus-01.azurewebsites.net)
+
+Deployed across three separate providers — a deliberate choice, using the best free-tier fit for each piece rather than defaulting to one vendor:
+- **Frontend**: [Cloudflare Pages](https://pages.cloudflare.com), auto-deploying on every push to `main`
+- **Backend**: [Azure App Service](https://azure.microsoft.com/products/app-service) (free tier), via a GitHub Actions CI/CD pipeline
+- **Database**: [Neon](https://neon.tech) (serverless Postgres, free tier)
+
+Note: the backend runs on Azure's free tier, which sleeps after inactivity — the first request after idle time may take up to 30 seconds while it "cold starts."
+
 ## Screenshots
 
 | Recipe List | Recipe Detail |
@@ -49,6 +61,7 @@ Built end-to-end as a portfolio project: ASP.NET Core Web API backend, React + T
 - xUnit + EF Core InMemory provider (backend), Vitest + React Testing Library (frontend)
 - 51 backend tests, 25 frontend tests
 - GitHub Actions running both suites in parallel on every push
+- Deployed via CI/CD: GitHub Actions auto-deploys the backend to Azure; Cloudflare Pages auto-deploys the frontend, both triggered on every push to `main`
 
 ## Architecture Highlights
 
@@ -67,6 +80,8 @@ A few deliberate decisions worth noting:
 - Leftover tracking is a simple boolean per meal plan entry rather than full portion/serving tracking — it assumes a leftover entry fully reuses a prior entry's ingredients rather than modeling partial consumption.
 - No end-to-end (browser-driven) test suite; the project relies on thorough manual verification plus focused backend service tests and frontend component tests.
 - The backend is hosted on Azure App Service's free (F1) tier, which sleeps after a period of inactivity. The first request after a period of idle time (or right after a fresh deploy) may take longer than usual while the app "cold starts" — subsequent requests are fast. A paid tier would eliminate this, but wasn't necessary for a portfolio project's needs.
+
+Want to try it without setting anything up? See the [Live Demo](#live-demo) above. To run it locally instead, follow the steps below.
 
 ## Getting Started
 

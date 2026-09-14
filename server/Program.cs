@@ -68,7 +68,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins("https://pantry-plan-zendrakk.netlify.app")
+        policy.WithOrigins("https://pantry-plan.pages.dev")
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();
