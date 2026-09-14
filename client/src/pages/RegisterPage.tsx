@@ -5,6 +5,7 @@ import { ApiError } from '../api/client'
 import { useToast } from '../toast/useToast'
 import usePageTitle from '../hooks/usePageTitle'
 import Button from '../components/Button'
+import AuthLayout from '../components/AuthLayout'
 
 function RegisterPage() {
   const auth = useAuth()
@@ -62,7 +63,7 @@ function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+    <AuthLayout>
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-sm">
         <h1 className="text-2xl font-bold text-gray-900 mb-6">Create Account</h1>
 
@@ -125,7 +126,7 @@ function RegisterPage() {
           </Link>
         </p>
       </div>
-    </div>
+    </AuthLayout>
   )
 }
 

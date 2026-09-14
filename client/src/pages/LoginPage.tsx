@@ -4,6 +4,7 @@ import { useAuth } from '../auth/useAuth'
 import { ApiError } from '../api/client'
 import usePageTitle from '../hooks/usePageTitle'
 import Button from '../components/Button'
+import AuthLayout from '../components/AuthLayout'
 
 function LoginPage() {
   const auth = useAuth()
@@ -54,7 +55,7 @@ function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+    <AuthLayout>
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-sm">
         <h1 className="text-2xl font-bold text-gray-900 mb-6">Log In</h1>
 
@@ -102,7 +103,7 @@ function LoginPage() {
           </Link>
         </p>
       </div>
-    </div>
+    </AuthLayout>
   )
 }
 
