@@ -1,0 +1,21 @@
+version: 2
+updates:
+  # .NET dependencies (NuGet packages) in the backend
+  - package-ecosystem: "nuget"
+    directory: "/server"
+    schedule:
+      interval: "weekly"
+
+  # npm dependencies in the frontend
+  - package-ecosystem: "npm"
+    directory: "/client"
+    schedule:
+      interval: "weekly"
+
+  # Keep the GitHub Actions themselves up to date too (e.g. actions/checkout,
+  # dorny/test-reporter) - this is the same category of fix we've had to do
+  # manually several times already when action versions fell behind.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
