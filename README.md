@@ -62,6 +62,7 @@ Note: the backend runs on Azure's free tier, which sleeps after inactivity — t
 - 51 backend tests, 25 frontend tests
 - GitHub Actions running both suites in parallel on every push
 - Deployed via CI/CD: GitHub Actions auto-deploys the backend to Azure; Cloudflare Pages auto-deploys the frontend, both triggered on every push to `main`
+- Dependabot configured for automatic security alerts and version updates across NuGet, npm, and GitHub Actions dependencies
 
 ## Architecture Highlights
 
