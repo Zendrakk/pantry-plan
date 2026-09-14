@@ -74,23 +74,31 @@ public class AuthController(IAuthService authService) : ControllerBase
 
     private void AppendRefreshTokenCookie(string rawToken)
     {
-        Response.Cookies.Append(RefreshTokenCookieName, rawToken, new CookieOptions
+        var cookieOptions = new CookieOptions
         {
             HttpOnly = true,
             Secure = true,
             SameSite = SameSiteMode.None,
             Expires = DateTimeOffset.UtcNow.AddDays(30),
             Path = RefreshTokenCookiePath
-        });
+        };
+
+        cookieOptions.Extensions.Add("Partitioned");
+
+        Response.Cookies.Append(RefreshTokenCookieName, rawToken, cookieOptions);
     }
 
     private void DeleteRefreshTokenCookie()
     {
-        Response.Cookies.Delete(RefreshTokenCookieName, new CookieOptions 
+        var cookieOptions = new CookieOptions
         {
             Path = RefreshTokenCookiePath,
             Secure = true,
             SameSite = SameSiteMode.None
-        });
+        };
+
+        cookieOptions.Extensions.Add("Partitioned");
+
+        Response.Cookies.Delete(RefreshTokenCookieName, cookieOptions);
     }
 }
