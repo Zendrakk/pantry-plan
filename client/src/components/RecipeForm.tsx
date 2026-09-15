@@ -194,10 +194,16 @@ function RecipeForm(props: RecipeFormProps) {
                 type="number"
                 placeholder="Qty"
                 min="0.01"
-                step="0.01"
-                value={ingredient.quantity}
+                step="1"
+                value={ingredient.quantity === 0 ? '' : ingredient.quantity}
                 onChange={function (event) {
-                  handleIngredientFieldChange(index, 'quantity', Number(event.target.value))
+                  var rawValue = event.target.value
+
+                  if (rawValue === '') {
+                    handleIngredientFieldChange(index, 'quantity', 0)
+                  } else {
+                    handleIngredientFieldChange(index, 'quantity', Number(rawValue))
+                  }
                 }}
                 required
                 className="w-20 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
