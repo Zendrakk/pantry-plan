@@ -37,7 +37,7 @@ Note: the backend runs on Azure's free tier, which sleeps after inactivity — t
 
 - **Authentication** — registration, login, and logout with industry-standard JWT access tokens and secure, HttpOnly refresh token cookies
 - **Refresh token rotation with theft detection** — every refresh issues a new token and revokes the old one; if a previously-rotated token is ever replayed, every active session for that user is automatically revoked as a precaution
-- **Brute-force protection** — IP-based rate limiting and account lockout on the login endpoint, deliberately tuned to avoid becoming a denial-of-service vector against real users
+- **Brute-force protection** — a strict, IP-based rate limit specifically on login and registration, backed by account lockout, deliberately tuned to avoid becoming a denial-of-service vector against real users; a looser, global rate limit applies to every other endpoint as a general safety net against scripted abuse
 - **Recipe management** — full CRUD with server- and client-side validation, ingredient deduplication, and ownership-scoped access (users can only ever see or modify their own data)
 - **Meal planning** — plan recipes across specific dates and meal types, with support for marking a planned meal as "leftovers" so it doesn't duplicate ingredients on the shopping list
 - **Automatic shopping list generation** — aggregates ingredients across every non-leftover recipe in a meal plan, merging quantities that share a unit and keeping mismatched units as separate line items
@@ -75,6 +75,7 @@ A few deliberate decisions worth noting:
 - **Ingredients are scoped per-user, not shared globally.** Two users can each have their own "Flour" ingredient row — this prevents a user from ever seeing free-text content (like an ingredient name) that another user created, closing off a potential vector for inappropriate or abusive content to become visible across accounts.
 - **Targeted, structured logging around security-sensitive events.** Rather than logging every request, `AuthService` logs specifically at meaningful points — failed login attempts, account lockouts, successful registrations, and especially refresh token reuse detection (logged at `Error` severity, since it signals a possible token theft attempt) — using structured log parameters rather than string interpolation, so fields like user ID remain queryable in tools like Azure's Log Analytics.
 - **Defensive HTTP response headers.** HSTS (enforced in production only), `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, and a restrictive `Referrer-Policy` are applied to every response, hardening against content-sniffing attacks, clickjacking, and unnecessary URL leakage.
+- **Two-tier rate limiting.** Auth endpoints (login, register) are protected by a strict, purpose-specific limit, since they're the realistic target of credential attacks and bulk account creation. Every other endpoint falls under a separate, much more generous global limit, partitioned by IP — generous enough that no real user would ever notice it, but enough to blunt a scripted actor hammering the API at scale.
 
 ## Known Limitations & Possible Future Work
 

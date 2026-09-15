@@ -44,6 +44,23 @@ builder.Services
 
 builder.Services.AddRateLimiter(options =>
 {
+    // A generous, global safety net applied to every request by default - protects against
+    // runaway scripts or scraping without affecting any real user's normal usage.
+    options.GlobalLimiter = System.Threading.RateLimiting.PartitionedRateLimiter.Create<HttpContext, string>(context =>
+    {
+        var ipAddress = context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+
+        return System.Threading.RateLimiting.RateLimitPartition.GetFixedWindowLimiter(ipAddress, _ =>
+            new System.Threading.RateLimiting.FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 100,
+                Window = TimeSpan.FromMinutes(1),
+                QueueLimit = 0
+            });
+    });
+
+    // A stricter policy specifically for login/register, opted into via
+    // [EnableRateLimiting("AuthPolicy")] - overrides the global limiter for just those endpoints.
     options.AddFixedWindowLimiter("AuthPolicy", limiterOptions =>
     {
         limiterOptions.PermitLimit = 5;
