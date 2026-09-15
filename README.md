@@ -79,6 +79,7 @@ A few deliberate decisions worth noting:
 
 ## Known Limitations & Possible Future Work
 
+- No email confirmation on registration. In a real production app, I'd require users to verify their email before activating an account — both to confirm the address is real and as a mild deterrent against automated bulk account creation. For a portfolio project, I judged the added complexity (transactional email provider, confirmation tokens, a new UI flow) wasn't worth it relative to the actual risk, especially since registration is already protected by rate limiting and account lockout.
 - The shopping list does not attempt unit conversion (e.g., cups to grams) — ingredients measured in different units are listed as separate line items rather than converted and merged. This was a deliberate scope decision, since unit conversion depends on ingredient density and is a meaningfully harder problem.
 - Leftover tracking is a simple boolean per meal plan entry rather than full portion/serving tracking — it assumes a leftover entry fully reuses a prior entry's ingredients rather than modeling partial consumption.
 - No end-to-end (browser-driven) test suite; the project relies on thorough manual verification plus focused backend service tests and frontend component tests.
