@@ -73,7 +73,6 @@ describe('RecipeForm', function () {
     await user.type(screen.getByPlaceholderText('Ingredient name'), 'Flour')
 
     const quantityInput = screen.getByPlaceholderText('Qty')
-    await user.clear(quantityInput)
     await user.type(quantityInput, '2')
 
     await user.click(screen.getByText('Create Recipe'))
@@ -96,7 +95,6 @@ describe('RecipeForm', function () {
     await user.type(screen.getByPlaceholderText('Ingredient name'), 'Flour')
 
     const quantityInput = screen.getByPlaceholderText('Qty')
-    await user.clear(quantityInput)
     await user.type(quantityInput, '2')
 
     await user.click(screen.getByText('Create Recipe'))

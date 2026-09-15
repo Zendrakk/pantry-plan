@@ -194,7 +194,7 @@ function RecipeForm(props: RecipeFormProps) {
                 type="number"
                 placeholder="Qty"
                 min="0.01"
-                step="1"
+                step="any"
                 value={ingredient.quantity === 0 ? '' : ingredient.quantity}
                 onChange={function (event) {
                   var rawValue = event.target.value
@@ -206,7 +206,7 @@ function RecipeForm(props: RecipeFormProps) {
                   }
                 }}
                 required
-                className="w-20 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-20 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
               />
 
               <select
