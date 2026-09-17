@@ -205,7 +205,7 @@ function MealPlanDetailPage() {
                   onChange={function (event) {
                     setSelectedRecipeId(event.target.value)
                   }}
-                  className="border border-gray-300 rounded-md px-3 py-2 h-10"
+                  className="border border-gray-300 rounded-md px-3 py-2"
                 >
                   {recipes.map(function (recipeSummary) {
                     return (
@@ -229,7 +229,7 @@ function MealPlanDetailPage() {
                     setEntryDate(event.target.value)
                   }}
                   required
-                  className="border border-gray-300 rounded-md px-3 py-2 h-10"
+                  className="border border-gray-300 rounded-md px-3 py-2"
                 />
               </div>
 
@@ -243,7 +243,7 @@ function MealPlanDetailPage() {
                   onChange={function (event) {
                     setSelectedMealType(event.target.value as MealType)
                   }}
-                  className="border border-gray-300 rounded-md px-3 py-2 h-10"
+                  className="border border-gray-300 rounded-md px-3 py-2"
                 >
                   {mealTypeOptions.map(function (mealTypeOption) {
                     return (

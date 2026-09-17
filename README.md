@@ -85,6 +85,7 @@ A few deliberate decisions worth noting:
 - Leftover tracking is a simple boolean per meal plan entry rather than full portion/serving tracking — it assumes a leftover entry fully reuses a prior entry's ingredients rather than modeling partial consumption.
 - No end-to-end (browser-driven) test suite; the project relies on thorough manual verification plus focused backend service tests and frontend component tests.
 - The backend is hosted on Azure App Service's free (F1) tier, which sleeps after a period of inactivity. The first request after a period of idle time (or right after a fresh deploy) may take longer than usual while the app "cold starts" — subsequent requests are fast. A paid tier would eliminate this, but wasn't necessary for a portfolio project's needs.
+- A few minor iOS Safari-specific rendering quirks exist around native `<input type="date">` elements (slight width/height inconsistencies compared to adjacent form controls). These are well-documented platform rendering behaviors, not functional bugs — every field remains fully usable. I chose not to replace native date inputs with a custom date-picker library to work around a cosmetic-only issue.
 
 Want to try it without setting anything up? See the [Live Demo](#live-demo) above. To run it locally instead, follow the steps below.
 
