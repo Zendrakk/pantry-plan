@@ -143,7 +143,7 @@ function MealPlanDetailPage() {
         &larr; Back to Meal Plans
       </Link>
 
-      <div className="flex items-center justify-between mt-4 mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mt-4 mb-6 gap-3">
         <h1 className="text-2xl font-bold text-gray-900">Week of {mealPlan.weekStartDate}</h1>
         <div className="flex gap-2">
           <LinkButton to={'/meal-plans/' + mealPlan.id + '/shopping-list'} variant="primary">

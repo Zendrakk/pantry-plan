@@ -176,7 +176,7 @@ function RecipeForm(props: RecipeFormProps) {
 
         {ingredients.map(function (ingredient, index) {
           return (
-            <div key={index} className="flex gap-2 mb-2">
+            <div key={index} className="flex flex-wrap gap-2 mb-2">
               <input
                 type="text"
                 placeholder="Ingredient name"
