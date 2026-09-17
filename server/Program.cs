@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
@@ -22,7 +23,8 @@ builder.Services.AddControllers()
 builder.Services.AddOpenApi();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"),
+        npgsqlOptions => npgsqlOptions.EnableRetryOnFailure(maxRetryCount: 3)));
 
 builder.Services.AddDataProtection();
 
@@ -124,6 +126,22 @@ builder.Services.AddScoped<IRecipeService, RecipeService>();
 builder.Services.AddScoped<IMealPlanService, MealPlanService>();
 
 var app = builder.Build();
+
+// Register a global exception-handling middleware.
+// This catches unhandled exceptions that occur later in the request pipeline.
+app.UseExceptionHandler(errorApp =>
+{
+    errorApp.Run(async context =>
+    {
+        var exceptionFeature = context.Features.Get<IExceptionHandlerFeature>();
+        var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
+        logger.LogError(exceptionFeature?.Error, "Unhandled exception");
+
+        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+        context.Response.ContentType = "application/json";
+        await context.Response.WriteAsJsonAsync(new { error = "An unexpected error occurred." });
+    });
+});
 
 app.UseHttpsRedirection();
 
