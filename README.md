@@ -61,7 +61,7 @@ Note: the backend runs on Azure's free tier, which sleeps after inactivity — t
 - xUnit + EF Core InMemory provider (backend), Vitest + React Testing Library (frontend)
 - 51 backend tests, 25 frontend tests
 - GitHub Actions running both suites in parallel on every push
-- Deployed via CI/CD: GitHub Actions auto-deploys the backend to Azure; Cloudflare Pages auto-deploys the frontend, both triggered on every push to `main`
+- Deployed via CI/CD: the Azure deployment workflow triggers only after the full CI test suite passes, ensuring nothing broken is ever deployed to the backend. The frontend deploys independently via Cloudflare Pages' native Git integration on every push to `main`, without waiting on the frontend test suite — gating this would require moving off Cloudflare's built-in deployment in favor of a custom GitHub Actions-based deploy, which wasn't worth the added complexity for a portfolio project.
 - Dependabot configured for automatic security alerts and version updates across NuGet, npm, and GitHub Actions dependencies
 
 ## Architecture Highlights
