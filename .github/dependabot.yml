@@ -19,3 +19,6 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    ignore:
+      - dependency-name: "Microsoft.OpenApi"
+        update-types: ["version-update:semver-major"]
